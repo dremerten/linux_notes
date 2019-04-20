@@ -1,0 +1,1721 @@
+"""This class teaches students how to manage users, groups and permissions in a Linux enviornment.
+Topics Covered
+
+Adding and Deleting Users
+Editing the passwd File Which Contains User Configurations
+Changing User Passwords
+Adding and Deleting Groups
+Adding and Deleting Users from Groups
+Editing the group Configuration File
+Understanding Permission Numbering System
+Changing User and Group Ownership for Files and Folders
+Class Notes"""
+
+
+Users
+Add User = sudo adduser username
+Change User password = sudo passwd username
+Delete User = sudo userdel username
+Edit Users Configuration File = sudo vim /etc/passwd (shows usernames, names of users, home directories)
+Groups
+Sudo groupadd groupname
+Sudo groupdel groupname
+Sudo vim /etc/group (shows groups and users)
+Permissions
+Numbers = owner/group/everyone else
+4 = read, 2 = write, 1 = execute
+To Chanege Permissions of a File or Folder = sudo chmod 777 file/folder (-R for recursive)
+Changing Ownership
+To Change User Ownership = sudo chown -R username file/folder
+To Change Group Ownership =sudo chgrp --R groupname file/folder
+-R for Recursive for Folders
+
+
+""" This is a resource file to refresh how to correctly use vim editor"""
+in terminal shell prompt:$ vimtutor
+
+######################################################################################
+
+HOW TO RESET/RECOVER ROOT PASSWORD (RED HAT LINUX)
+
+1. Reboot machine 
+# At GRUB bootloader
+When prompt to select OS press 'e'(for edit mode)
+
+2. Locate the kernel line and navigate to the end of the line.
+Add 'rd.break' (Ram Disk break)
+
+3. Continue with bootup by pressing ctrl+x
+
+4. mount -o remount,rw /sysroot
+chroot /sysroot
+passwd
+typed password twice
+touch /.autorelabel
+exit﻿
+
+######################################################################################
+
+HOW TO RESET/RECOVER ROOT/USER PASSWORD (Ubuntu 16.04)
+
+# This was performed and successful on my infoset-ng server (andre@suerte) 
+# IP address 10.0.0.100
+
+1. Reboot the system
+- At the GRUB menu quickly press 'e' to enter edit mode on the kernel.
+
+2. Find the line beginning with 'linux' and place cursor there, press 'end' key to jump to the end of the line. (you should see 'ro' as the last command (this stands for 'read only')
+
+TWO OPTIONS TO CONTINUE:
+
+OPTION 1: Delete everything after 'ro'(sometimes it will say splash screen....) and append the following:
+
+# this is what you should see
+root=/dev/mapper/<$HOSTNAME>--vg-root ro
+root=/dev/mapper/suerte--vg-root ro
+
+# add this:
+root=/dev/mapper/suerte--vg-root rw init=/bin/bash
+
+Press ctrl+x to continue reboot
+
+You will now be in /bin/bash as root like so:
+root@(None):/# 
+
+Here you can reset the password
+1. FOR CHANGE OF ROOT PW
+passwd root
+
+2. FOR CHANGE OF A SPECIFIC USER
+passwd <user_name> (e.g archie)
+
+You will then be prompt to enter the NEW unix PS and confirm it
+
+Type : sync 
+to apply the changes
+sync - Synchronize cached writes to persistent storage
+
+Exit by running:
+exit
+
+****************************
+OPTION 2:
+
+1. Reboot the system
+- At the GRUB menu quickly press 'e' to enter edit mode on the kernel.
+
+2. Find the line beginning with 'linux' and place cursor there, press 'end' key to jump to the end of the line. (you should see 'ro' as the last command (this stands for 'read only')
+
+# this is what you should see
+root=/dev/mapper/<$HOSTNAME>--vg-root ro
+root=/dev/mapper/suerte--vg-root ro
+
+3. Now instead of deleting anything we can just add to at the end like so:
+
+root=/dev/mapper/<$HOSTNAME>--vg-root ro init=/bin/bash
+
+4. Press ctrl+x to continue boot
+
+5. Here is where it differs from OPTION 1
+- at the moment we don't have the ability to 'write' on the file system, only 'read'(ro)
+- you can verify this by running:
+mount 
+
+Output: /dev sda1 on / type ext4 (ro,relatime,data=ordered)
+
+To write to the file system:
+mount -o remount,rw / 
+this allows us to now read and write to the file system at / (root).
+
+check that you have ability to 'rw'
+Output: /dev sda1 on / type ext4 (rw,relatime,data=ordered)
+
+Here you can reset the password
+1. FOR CHANGE OF ROOT PW
+passwd root
+
+2. FOR CHANGE OF A SPECIFIC USER
+passwd <user_name> (e.g archie)
+
+You will then be prompt to enter the NEW unix PS and confirm it
+
+Type : sync 
+to apply the changes
+sync - Synchronize cached writes to persistent storage
+
+
+
+###############################################################################################
+How can we change root password
+Here are a few ways I can think of, from the least intrusive to the most intrusive.
+
+Without Rebooting
+With sudo: if you have sudo permissions to run passwd, you can do:
+
+$ sudo passwd root
+
+Enter your password, then enter a new password for root twice. Done.
+
+Editing files: this works in the unlikely case you don't have full sudo access, but you do have access to edit /etc/{passwd,shadow}. Open /etc/shadow, either with sudoedit /etc/shadow, or with sudo $EDITOR /etc/shadow. Replace root's password field (all the random characters between the second and third colons :) with your own user's password field. Save. The local has the same password as you. Log in and change the password to something else.
+
+###############################################################################################
+
+HOW TO LIST ALL USERS ON SYSTEM WITH A HOME DIRECTORY
+
+1. Run as Root
+2. # cat /etc/passwd | grep /home*
+
+
+##############################################################################################
+
+***PRACTICE RHCSA QUESTIONS***
+
+1. Set up an account for a new System Administrator, Jason, who has just joined your team. His full name is Jason Doe, his shell is bash, he is a member of a new group called admin. His user quota at /home is 100Mb.Jason can execute any command as root but has to supply his own password at each request.
+
+
+1.Run as Root (su -)
+
+2. # create the group admin with a gid(group ID) of 601
+command: groupadd -g 601 admin
+
+3. # add the user to group 601, allow shell access in /bin/bash, add a home directory at /home/jason, -c comment full name
+
+command: useradd -g 601 -s /bin/bash -d /home/jason -c "Jason Doe" jason
+
+###########################################################################################################
+
+How to search the linux repository for a specific program name:
+# use this command to search for what you think a program is called. 
+apt-cache will return similar results to help you determine the exact name of the program you are looking for along with a short description.
+# be sure to use a (*) at the end of the program name to include 'all' files 
+when searching.
+
+	$ sudo apt-cache search <name of program*>
+	$ sudo apt-cache search Django*
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# To repeat the previous command use:
+
+	$ sudo !!
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# To switch users use:
+
+	$ su <name of user>
+	$ su carolina
+	$ su andre
+
+# To change to Root user use:
+
+	# 'Super user do, super user'.
+	$ sudo su
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# To manage packages/install, remove, update, and upgrade  use the 'apt-get' program
+# command usage: sudo apt-get <action> <file or program you want action performed on>
+# example:
+	$ sudo apt-get install <name of program(package)>
+	$ sudo apt-get install bluefish
+
+# To remove a program use:
+	$ sudo apt-get remove <name of program(package)>
+	$ sudo apt-get remove bluefish
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# To make a 'matrix' style effect on command line use this:
+
+	$ while (true) do echo -n "your message"; done
+
+# To kill task: ctrl z
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# To check if a program or specific package is install on your local machine use:
+
+	$ apt-cache policy <name of program>
+	$ apt-cache policy python3
+	output:
+		python3:
+			Installed: 3.5.1-3
+			Candidate: 3.5.1-3
+		Version table:
+			*** 3.5.1-3 500
+			500 http://us.archive.ubuntu.com/ubuntu xenial/main amd64 Packages
+			100 /var/lib/dpkg/status
+
+# This will tell you if it exists on the machine and where it is installed.
+
+# To check a known non-exsistant program output look like the following:
+	$ apt-cache policy bluefish
+	output:
+		bluefish:
+		  Installed: (none)
+		  Candidate: 2.2.7-2
+		Version table:
+		2.2.7-2 500
+		500 http://us.archive.ubuntu.com/ubuntu xenial/universe amd64 Packages
+
+# Installed = NONE
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# FILE PERMISSIONS AND FILE OWNERSHIP
+--------------------------------------
+
+USE:  
+	$ ls -l (list with 'long view) 
+to show files with permissions and user/groups
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+drwxrwxr-x 2 andre andre  4096 Jun 17 17:44 Command_Line_Notes
+
+In the order of output:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-rwxrw-r--    1    root   root 2048    Jan 13 07:11 afile.exe
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-file permissions (drwxrwxr)
+number of links (1)
+owner name (root)
+owner group (root)
+file size (2048)
+time of last modification, and
+file/directory name (Jan 13 07:11 <name of file/directory>
+
+File permissions is displayed as following:
+
+first character is - or l or d
+d-  indicates a directory.
+a line(hyphen) represents a file.
+l-  is a symlink (or soft link) - special type of file.
+
+three sets of characters, three times, indicating permissions for owner, group and other:
+r = readable
+w = writable
+x = executable
+
+In the example out put above -rwxrw-r--, this means the line displayed is:
+
+a regular file (displayed as -)
+readable, writable and executable by owner (rwx)
+readable, writable, but not executable by group (rw-)
+readable but not writable or executable by other (r--)
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+# chown = 'Change ownership' - change to a specific user or 'Root'
+command:
+	$ chown user:group <name of file/directory> (can also specify a direct path (usr/env<name of file>)
+
+# chmod = 'Change permissions' - allowing what can and can not be done to a specific file or directory.
+
+NOTE**** You can add -R to both chown, and chmod to make the command recursive to all files in a directory.
+
+EXAMPLE:
+	chown -R user:group <name of directory>
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Command syntax[edit]
+
+	$ chmod [options] mode[,mode] file1 [file2 ...][3]
+
+Usual implemented options include:
+
+-R recursive, i.e. include objects in subdirectories
+-f force, forge ahead with all objects even if errors occur
+-v verbose, show objects processed
+If a symbolic link is specified, the target object is affected. File modes directly associated with symbolic links themselves are typically never used.
+
+To view the file mode, the ls or stat commands may be used:
+
+$ ls -l findPhoneNumbers.sh
+
+-rwxr-xr--  1 dgerman  staff  823 Dec 16 15:03 findPhoneNumbers.sh
+$ stat -c %a findPhoneNumbers.sh
+
+754
+
+The r, w, and x specify the read, write, and execute access, respectively. The first character of the ls display denotes the object type;
+a hyphen represents a plain file. This script can be read, written to, and executed by the owner, read and executed by other members of the staff group and can also be read by others.
+
+Octal modes[edit]
+See also: Octal notation of file system permissions
+
+The chmod numerical format accepts up to four octal digits. 
+The three rightmost digits refer to permissions for the file owner, the group, and other users.
+The optional leading digit, when 4 digits are given, specifies the special setuid, setgid, and sticky flags.
+
+Numerical permissions
+
+#	Permission	rwx
+7	read, write and execute	rwx
+6	read and write	rw-
+5	read and execute	r-x
+4	read only	r--
+3	write and execute	-wx
+2	write only	-w-
+1	execute only	--x
+0	none	---
+Numeric example[edit]
+In order to permit all users who are members of the programmers group to update a file
+
+	$ ls -l sharedFile
+
+-rw-r--r--  1 jsmith programmers 57 Jul  3 10:13  sharedFile
+	$ chmod 664 sharedFile
+	$ ls -l sharedFile
+
+-rw-rw-r--  1 jsmith programmers 57 Jul  3 10:13  sharedFile
+Since the setuid, setgid and sticky bits are not specified, this is equivalent to:
+
+	$ chmod 0664 sharedFile
+
+################################################################################################################
+
+In Linux, what does the d mean in the first position of drwxr-xr-x? And what are all of the possible letters that could be there, and what do they mean?
+
+I'm trying to learn more about the Linux file permissions system, and I'd like to see a list of the character meanings for the first slot.
+
+It means that it is a directory. The first mode field is the "special file" designator; regular files display as - (none). As for which possible letters could be there, on Linux the following exist:
+
+d (directory)
+c (character device)
+l (symlink)
+p (named pipe)
+s (socket)
+b (block device)
+D (door, not common on Linux systems, but has been ported)
+
+##############################################################################################################################
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Creating New files, directories. Removing and deleting files/directories
+
+Commands:
+
+	$ touch - creates files
+EXAMPLE:
+	$ touch <nameoffile.extension_type>
+
+	$ touch file.txt file2.txt file3.txt file.py file4.cpp file5.html file6.html
+** This creates 6 new files
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+mkdir(make directory)- creates a new empty directory
+
+cp(copy)- how to copy files to a new location
+
+	$ cp <name of target file> <specific directory path>
+	$ cp pythonNotes /Documents/tutorials/python
+
+** WHEN INSIDE OF SPECIFIC DIRECTORY**
+rm(remove)- removes files and directories
+	$ rm file.txt
+
+To remove all files from a directory but keep the directory use:
+	$ rm ./*
+
+To remove all files with a specific file extension use:
+	$ rm ./*.<extension_type>
+	$ rm ./*.html
+
+** WHEN NOT IN SPECIFIC DIRECTORY **
+
+To remove all file from a directory but keep the directory use:
+	$ rm <nameofdirectory>/*
+	$ rm Documents/*
+
+To remove the directory use:
+	$ rm -rf <nameofdirectory>
+	$ rm -rf schoolnotes
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# To move a file use:
+	$ mv filename <destination>
+	$ mv file1.txt /Documents/newdir
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FIND COMMAND***
+~~~~~~~~~~~~~~~~~
+
+# use this to find specific files, file extensions, file sizes, as well as specific directories.
+
+Command:
+	$ find . -type f -iname "*.html"
+	
+	# you can also specify a specific directory in the search like so
+	# This command reads as: 
+		find in the /etc directory all file types, ignore case and return all with a .conf extension.
+	$ find /etc -type f -iname "*.conf"
+
+
+
+$ find . -type f -iname "*.html"
+
+find = command
+. = in the current directory
+-type f = the type we are searching for is 'f' for file.
+-iname = means to ignore case (upper/lower) this will return all
+"" = name of specific file or name of specific extension type
+* = wild card for searching for ALL
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GREP Command***
+~~~~~~~~~~~~~~~~~
+
+# Use grep to find specific items within a file
+
+Command:
+	$ grep <"what you are looking for> <name of file to look in>
+	$ grep "function" file1.py
+
+# Search all files within current directory, ignoring case(case insensitive)
+	$ grep -i "function" ./*
+
+
+***USE THIS COMMAND TO SEARCH FOR MOST INSTANCES WITHIN A FILE****
+# Search and return with line number where instances of the search string are found.
+	$ grep -i -n "config" ./*
+
+
+# *** YOU CAN ALSO USE GREP IN CONJUNCTION WITH THE 'FIND' COMMAND***
+
+	# you can run a find command as normal and at the end of the command add the flag -exec(execute)
+	# -exec takes the grep command argument
+	# at the end of your grep command you need to end the statement with {} +
+
+
+	# this will search and find and return...
+	$ find . -type f -iname "*.php" -exec grep -i -n "config" {} +
+
+		-find in the current directory
+		-all file types
+		-ignoring case(case insensitive)
+		-search all with .php extentions
+		THEN
+		- Execute grep
+		- ignoring case
+		- show line numbers
+		- return 'config' as search
+		- {} + end the execute statement
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Redirect the output of a command to a file by printing and creating a file to add output in.
+	- you do this by running the command on the output source
+	Example:
+		$ find . -type f -size -20k -iname "*.py" -exec grep -i -n "config" {} + | tee drelog.txt
+
+	# This searches the current directory looking for files less than 20 kilobytes with the .py extention. 
+	# Then executes grep case insensitive, displaying line numbers searching for string 'config' 
+	# Then it pipes the result into a file named 'drelog.txt' as well as prints the output to the screen.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# PROCESSES
+
+# Use 'top' or 'htop' to view in real-time current processes.
+
+# To view all background tasks use the command:
+	$ ps aux
+
+# To view a specific app or program use ps aux and pipe the app or program as the argument.
+	$ ps aux | python3
+
+# To view processor ID's (PID) use the command pgrep.
+	$ pgrep chrome
+
+# To kill a single app or process use grep to return the proccessor id and then kill it based on it's id.
+	$ pgrep chrome
+		output:
+		1568
+		3369
+		1497
+		7812
+	# To kill a specific process use this command.
+		$ kill -9 1497
+
+# Likewise to kill all of the proccesses use:
+	$ killall chrome
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Why you don't have a root password
+
+While you can create a password for the superuser account allowing you to log in as root with su, it's worth mentioning that this isn't the "Ubuntu" way of doing things. Ubuntu have specifically chosen not to give a root login and password by default for a reason. Instead, a default Ubuntu install will use sudo.
+
+Sudo is an alternative to giving people a root password in order to perform superuser duties. In a default Ubuntu install the person who installed the OS is given "sudo" permission by default.
+
+Anybody with "sudo" permission may perform something "as a superuser" by pre-pending sudo to their command. For instance, to run apt-get dist-upgrade as a superuser, you could use:
+
+sudo apt-get dist-upgrade
+You will see this usage of sudo pretty much anywhere you read a tutorial about Ubuntu on the web. It's an alternative to doing this.
+
+su
+apt-get dist-upgrade
+exit
+
+With sudo, you choose in advance which users have sudo access. There is no need for them to remember a root password, as they use their own password. If you have multiple users, you can revoke one's superuser access just by removing their sudo permission, without needing to change the root password and notify everyone of a new password. You can even choose which commands a user is allowed to perform using sudo and which commands are forbidden for that user. And lastly, if there is a security breach it can in some cases leave a better audit trail showing which user account was compromised.
+
+Sudo makes it easier to perform a single command with superuser privileges. With su, you permanently drop to a superuser shell which must be exited using exit or logout. This can lead to people staying in the superuser shell for longer than necessary just because it's more convenient than logging out and in again later.
+
+With sudo, you still have the option of opening a permanent (interactive) superuser shell with the command:
+
+sudo su
+... and this can still be done without any root password, because sudo gives superuser privileges to the su command.
+
+And similarly, instead of su - for a login shell you can use sudo su - or even sudo -i.
+
+However when doing so you just need to be aware that you are acting as a superuser for every command. It's a good security principle not to stay as a superuser for longer than necessary, just to lessen the possibility of accidentally causing some damage to the system (without it, you can only damage files your user owns).
+
+Just to clarify, you can, if you choose, give the root user a password allowing logins as root as described in @Oli's answer, if you specifically want to do things this way instead. I just wanted to let you know about the Ubuntu convention of preferring sudo instead and let you know that there is an alternative.
+
+###########################################################################################
+
+# check this file when dealing with SELinux
+# all messages will be logged here
+-rw-r----- 1 syslog adm 904 May  7 19:17 /var/log/auth.log
+#########################################################################################
+# Some useful commands for providing 'help' within the terminal environment.
+1. Use man-pages of (man <command> -- these pages give a great over-view of the command and any additional arguments.
+2. Use '--help' (E.g cp --help)-- This provides a quick reference of how a command should be structured. Args within [](square brackets) are optional. Args that are NOT in [] are required.
+3. Use 'info' (info <command>) -- Much like the man pages, these provide info in addition to the 'man-pages'.
+4. If you know of a command but can't rememeber the exact name, you can search the system. You do this by using the 'apropos' command (E.g apropos cp).
+
+##############################################################################
+
+Gzip and bzip2 are functionally equivalent. (There once was a bzip, but it seems to have completely vanished off the face of the world.) Other common compression formats are zip, rar and 7z; these three do both compression and archiving (packing multiple files into one). Here are some typical ratings in terms of speed, availability and typical compression ratio (note that these ratings are somewhat subjective, don't take them as gospel):
+
+decompression speed (fast > slow): gzip, zip > 7z > rar > bzip2
+compression speed (fast > slow): gzip, zip > bzip2 > 7z > rar
+compression ratio (better > worse): 7z > rar, bzip2 > gzip > zip
+availability (unix): gzip > bzip2 > zip > 7z > rar
+availability (windows): zip > rar > 7z > gzip, bzip2
+As you can see, there isn't a clear winner. If you want to rely on programs that are likely to be installed already, use zip on Windows (or if possible, self-extracting archives, as Windows doesn't ship with any of these) and gzip on unix. If you want maximum compression, use 7z.
+
+Rar also has downside that, as far as I know, there is no free software that creates rar archives or that can unpack all rar archives. The other formats have free implementations and no (serious) patent claims.
+
+########################################################################################
+
+# Archiving a directory to a file using tar
+
+tar -czvf [destination_name].tar.gz or .tgz(also common) [original dir]
+***NOTE: arg 'f' MUST be the LAST ARGUMENT otherwise you will receive an error*****
+
+E.g: tar -czvf jupyternotebookbackup.tar.gz jupyternotebook/
+# now ls or ll the .tar.gz file and notice the file size... rather large and not practical for email or sending. In this case we need to compress the file using gzip.
+
+command: gzip [*.tar.gz file]
+
+# In order to view the contents of the tar file run:
+tar -tf [*.tar.gz]
+
+How to unzip .tgz file using the terminal
+To extract a .tgz file with tar you need to use,
+
+tar -xvzf /path/to/yourfile.tgz
+where,
+
+x for extract
+v for verbose
+z for gnuzip
+f for file, should come at last just before file name.
+
+#########################################################################################
+RHCSA Flash Cards  #
+********************
+
+$ vncpasswd
+
+This will prompt you to create a strong password that you will need to remember for connecting to your linux academy lab 
+server via a VNC Client Application.
+Before proceeding reboot your linux server.
+After a few minutes you can ssh back to your server.
+
+############################################################################################
+
+What does this do?
+
+cat [file] > [newfile].txt 
+
+This is output redirection into a new file. This creates the file if it does not exist and writes the output to the file. *NOTE: If the file already exists then this will overwrite the file.
+
+#############################################################################################
+
+What does this command do?
+
+$ ps aux >> processfile.txt
+
+This creates process.txt if it doesn't exist and/or appends the output of ps aux into the file process.txt
+
+##########################################################################################
+
+Man Page for ls command
+
+ls [OPTION]... [FILE]...
+
+Explain the syntax
+
+
+Anything within square brakets [..] is optional
+the  .... means that the command accepts multiple options and multiple files
+
+#########################################################################################
+
+
+How do you redirect a STDERR output to a log file?
+
+you do this by using the 2> (2 and a greater than sign)
+
+$ [some_bad_command] 2> logfile.txt
+
+again this creates the file if it doesn't exist.  However,  if the file does exist then you will need to use:
+ $ [some_bad_command] 2>> logfile.txt
+ to append the stderr output.
+
+##########################################################################################
+
+Hit Ctrl 'r' to issue a history of previous commands.
+
+#########################################################################################
+
+FILE TRANSFER THROUGH SSH USING 1. SCP or 2.SFTP
+(Please read the man pages for these)
+
+Both scp and sftp use the ssh port 22 because it is encrypted this is the safe way of file 
+transfering. NOTE!!! 'Telnet' is unsecure and should be avoided if possible.
+
+
+# scp [file...file...file] username@ip_address(:and specify where to put the files)
+# (eg below.. transfering test1-4 into CentOS remote server and placing the files into the 
+user's home directory.
+
+$ scp test1 test2 test3 test4 user@52.90.15.86:~/
+
+SFTP:
+
+$ sftp username@ip_address
+
+Once logged into remote server you are able to run most linux commands.
+
+# transfers file from the REMOTE SERVER --> LOCAL HOST
+# think... put file on LOCAL HOST
+$ put file_name
+
+# transfers file from the LOCAL HOST --> REMOTE SERVER
+# think... get file from LOCAL HOST
+$ get file_name
+
+TO EXIT SFTP:
+type: 'bye, exit or quit'
+
+
+
+
+####################################################################################
+
+RESTART SSH SERVICE
+
+sudo /etc/init.d/ssh restart
+
+
+
+#############################################################################################
+
+
+How can you list the active state of all loaded service unit configuration files?
+
+systemctl list-unit-files --type=service
+
+
+Where are the configuration files for systemd located?
+1./etc/systemd/system
+2./usr/lib/systemd/system
+
+How do you view the disabled/enabled settings of all units with the type "service"?
+
+systemctl list-unit-files --type=service
+
+Which man page shows information about unit configuration files and their locations?
+$ systemd.unit
+
+Which command displays all available kill signals?
+$ kill -l
+
+-20 is the most favorable for a given process.
+True
+
+Which command(s) would list all service unit configuration files regardless of whether they are active or not?
+$ systemctl --type=service --all
+
+How can you list all failed service unit configuration files?
+$ systemctl --failed --type=service
+
+What line in the bootloader entry do you need to edit after interrupting the boot process to change the current boot target?
+linux16
+
+Which "niceness" is the least favorable for a process?
+-19
+
+Systemctl halt shuts down and halts the system.
+True
+
+
+Only a privileged user can run a process with lower niceness.
+True
+
+Which command(s) display available systemd unit types?
+$ systemctl -t help
+
+How can you list the active state of all loaded service unit configuration files?
+$ systemctl list-units --type=service
+
+Which man page shows specific configuration options for a service unit configuration?
+
+$ man systemd.service
+
+
+Which command(s) would perform a reboot on the system?
+$ systemctl reboot, reboot, shutdown -r
+
+Which command(s) would move the system into the graphical.target?
+
+$ systemctl isolate graphical.target
+
+Which command(s) would power off the system?
+$ poweroff, systemctl poweroff, shutdown -P
+
+Which command(s) would reboot the system five minutes from now and notify all users on the system of the impending reboot?
+$ shutdown -r +5 rebooting!
+
+
+As part of the application build-out on your Red Hat 7 Enterprise system, you have a process that is running backend maintenance tasks. These maintenance tasks are not important and shouldn't take priority over other tasks on the system. How might you tell the system to assign CPU usage to this process only after other higher priority items have been completed or only if they do not need the CPU?
+
+--> Set the nice priority to 19 on the process using renice, nice or top.
+
+If your system is currently in the graphical.target, which command(s) would move it out of the graphical.target and into the multi-user.target?
+
+systemctl isolate multi-user.target
+
+
+What is the percentage load average for the following processor count and given load for the 5 minute load average?
+[root@localhost]# uptime 09:55:50 up 16:35, 3 users, load average: 4.05, 3.03, 3.75 
+[root@localhost ~]# grep "model name" /proc/cpuinfo | wc -l 
+5
+
+--> 60%
+
+
+Where are the configuration files for systemd located?
+
+$ /usr/lib/systemd/system, /etc/systemd/system
+
+Which command(s) would show all available targets on the system?
+
+$ systemctl list-unit-files --type=target
+
+
+
+How do you find all man pages associated with systemd?
+
+$ apropos systemd
+
+
+ Which command(s) would list unit configuration files that are dependencies for the network target?
+
+$ systemctl list-dependencies network.target
+
+The command systemctl set-default sets the default target for the system at boot time.
+
+True
+
+
+Which command creates or updates the manual page index caches; something you should run after installing new man pages?
+
+$ mandb
+
+
+How do you view the disabled/enabled settings of all units with the type "service"?
+
+$ systemctl list-unit-files --type=service
+
+####################################################################################################
+
+Exercise: Working with Systemd and Targets
+
+Install the httpd package.
+1.yum install httpd
+
+View all active targets on the system
+2. systemctl list-units --type=target
+
+View all targets installed on the disk.
+3.systemctl list-units --type=target --all
+
+Display the current default target.
+4.systemctl get-default
+
+Change the default target to the multi-user target if the multi-user target is available.
+5.systemctl list-units --type=target | grep multi-user.target
+multi-user.target   loaded active active Multi-User System
+root@localhost]# systemctl set-default multi-user.target
+
+
+View all available systemd configuration units.
+6.systemctl -t help
+
+
+Find the status of the sshd service.
+7.systemctl status sshd.service
+
+
+List all active service unit configuration files.
+8.systemctl list-units --type=service
+
+ Determine if the httpd service is active.
+9.systemctl is-active httpd
+
+Determine if the httpd service is enabled, and, if it is not, enable it.
+10.systemctl is-enabled httpd
+
+
+View enabled and disabled settings for all units of the type "service".
+11.systemctl list-unit-files --type=service --all
+
+List all service unit configuration files, whether they are active or not.
+12.[root@localhost]# systemctl list-units --all
+OR
+[root@localhost]# systemctl list-units --type=service --all
+
+########################################################################################################################
+
+# Finding all storage devices attached to a Linux machine
+
+[root@linuxacademy1 dev]# lsblk -o KNAME,TYPE,SIZE,MODEL
+
+KNAME TYPE SIZE MODEL
+xvda  disk  10G 
+xvda1 part   1M 
+xvda2 part  10G 
+xvdf  disk  20G 
+xvdg  disk  20G 
+xvdj  disk  20G 
+
+##############################################################################################################################
+
+IF DISK DOES NOT WANT TO UNMOUNT
+*******************************************
+
+Example:
+root@andre-ThinkPad-S3-Yoga-14:/mnt/usb_drive# umount /mnt/usb_drive 
+umount: /mnt/usb_drive: target is busy
+        (In some cases useful info about processes that
+         use the device is found by lsof(8) or fuser(1).)
+
+
+Solution: Solved by https://chrisjean.com/forcing-a-device-to-unmount-in-ubuntu-linux/
+
+FORCING a Device to Unmount in Ubuntu Linux
+
+I recently ran into an issue where a mounted SSHFS filesystem refused to unmount.
+
+I tried to unmount it from inside Nautilus by right-clicking the mount and selecting Unmount, but this failed with an error message. The error told me that it couldn’t unmount the device and gave a reason of “mount disagrees with the fstab”.
+
+I then edited the fstab (sudo vi /etc/fstab) and commented out the entry for the device. I tried to unmount in Nautilus again, but this time it told me that I couldn’t unmount the device because I wasn’t root and the device was not listed in fstab. I then uncommented the previously commented line and saved the file again.
+
+Time to get dirty. I tried to manually run umount, but it failed:
+
+[chris@home ~]$ sudo umount /mnt/share
+umount: /mnt/share: device is busy.
+        (In some cases useful info about processes that use
+        the device is found by lsof(8) or fuser(1))
+[chris@home ~]$ 
+This was getting personal now as the previous messages said nothing about the device being in use. I closed out every application and tried again. Same error message.
+
+I followed the instructions and ran man lsof followed by man fuser to find out more about those recommended commands. fuser was the winner.
+
+fuser allows you to find out detailed information about processes that are using specific files or sockets. In addition to getting information, it allows you to kill processes accessing the file or socket. This was exactly what I was looking for.
+
+After reading up on the fuser syntax, I ran the following:
+
+[chris@home ~]$ sudo fuser -km /mnt/share
+/mnt/share/: 9004c
+[chris@home ~]$ 
+This command basically translates into “find every process that is accessing the /mnt/share mount point and kill it”. Since I was unsure of the ownership of the processes that would be killed, I ran it with sudo to make sure that any processes could be killed.
+
+The /mnt/share/: 9004c response means that a process with an ID of 9004 was terminated.
+
+Again, I ran:
+
+[chris@home ~]$ sudo umount /mnt/share
+[chris@home ~]$ 
+This command cheerily replied with nothing, which is a good sign as it means that the umount command succeeded.
+
+Finally, the mount is unmounted. Now if only I could remember what I was trying to do when this problem happened…
+
+NOTE: ALSO TRY: umount -l (-l for lazy)
+
+###############################################################################################################################
+
+HOW TO CONFIGURE LOCAL YUM REPO IN REDHAT LINUX 7
+
+************************************************************
+
+1. Start rhel virtual machine (virtualbox)
+2. Make sure to have iso of redhat7.* (dvd.iso)
+3. ssh into virtual server
+
+# mount the iso
+
+root@vmrhel:#] mount rhel-server-7.1-x86_64-dvd.iso /mnt
+---> this should mount the iso as /dev/loop*(usally a number 0-9) (e.g /dev/loop1
+
+# cd into its mount point(/mnt/)
+# create directory to contain packages from dvd
+root@vmrhel:#] mkdir -p /data/pack
+
+
+# copy all package files from iso to /data/pack dir
+# cd into the dvd.iso and into the 'packages' directory
+root@vmrhel:#] cp -rvf * /data/pack
+
+NOTE: This will take some time
+*************************************************************************
+
+UNMOUNT ISO
+
+# cd out of the iso mount in torder to unmount properly
+
+root@vmrhel:#] umount /dev/loop0
+
+# cd into /data/pack/
+
+# create the repo
+root@vmrhel:#] ls | grep -i createrepo
+<createrepo-0.9.9-23.el7.noarch.rpm>
+
+# install the package
+root@vmrhel:#] rpm -ivh <package_name> ----> root@vmrhel:#] rpm -ivh createrepo-0.9.9-23.el7.noarch.rpm
+
+# confirm you are in the /data/pack dir
+
+# create the repo file
+root@vmrhel:#] createrepo -v .
+
+# now cd back to root home dir
+root@vmrhel:#] cd
+
+# add the repo
+root@vmrhel:#] yum-config-manager --add="rhel"
+
+# edit the newly created repo config file
+root@vmrhel:#] vim /etc/yum.repos.d/rhel.repo
+
+## BEFORE THE EDIT ##
+
+
+[rhel]
+name=added from : rhel
+baseurl=rhel
+enabled=1
+>
+>
+
+## EDIT LIKE SO: ##
+
+[rhel]
+name =rhel_local
+
+# this is for a LOCAL file
+baseurl = file:///data/pack
+# http
+baseurl = http:///data/pack/
+# tcp
+baseurl = tcp:///data/pack/
+enabled =1
+gpgcheck=0
+
+# save the file :wq!
+***********************************************************************************************
+
+# clean the repo
+root@vmrhel:#] yum clean all
+
+# view the complete repo list
+root@vmrhel:#] yum repolist or yum repolist all
+
+### TEST INSTALL ####
+
+# use the local repo 
+# this command will temporalay disable all of the repo except for the new local repo
+
+root@vmrhel:#] yum --disablerepo=* --enablerepo=rhel_local install httpd
+
+################################################################################################################################
+
+
+
+SSH KEY AUTHENTICATION FOR SECURE CONNECTION
+**********************************************************
+
+# do this on local/client machine
+$ ssh-keygen -t rsa
+
+# use the default location
+# you can password protect the file JUST REMEMBER THE PASSWORD!!!
+
+# do this on local/client machine
+# this sends the key to server/host machine enabling secure connection without having to log-in
+# this is because both the client and the server contain the public/private keys to establish the secure connection
+
+$ ssh-copy-id root@<ip_address>
+# enter root password to verify
+
+######################################################################################################################
+
+How to SSH to a VirtualBox guest externally through a host
+***********************************************************************
+
+The best way to login to a guest Linux VirtualBox VM is port forwarding. By default, you should have one interface already which is using NAT. Then go to the Network settings and click the Port Forwarding button. Add a new Rule:
+
+Host port 3022, guest port 22, name ssh, other left blank.
+
+
+from command line:
+
+VBoxManage modifyvm "myserver" --natpf1 "ssh,tcp,,3022,,22"
+where 'myserver' is the name of the created VM. Check the added rules:
+
+VBoxManage showvminfo "myserver" | grep 'Rule'
+That's all! Please be sure you don't forget to install an SSH server:
+
+sudo apt-get install openssh-server
+To SSH into the guest VM, write:
+
+ssh -p 3022 user@127.0.0.1
+Where user is your username within the VM.
+
+#############################################################################################################################
+
+# find the package by name
+
+[root@localhost yum.repos.d]# yum info vsftpd
+Loaded plugins: langpacks, product-id, search-disabled-repos, subscription-manager
+Available Packages
+Name        : vsftpd
+Arch        : x86_64
+Version     : 3.0.2
+Release     : 22.el7
+Size        : 169 k
+Repo        : rhel-7-server-rpms/7Server/x86_64
+Summary     : Very Secure Ftp Daemon
+URL         : https://security.appspot.com/vsftpd.html
+License     : GPLv2 with exceptions
+Description : vsftpd is a Very Secure FTP daemon. It was written completely from
+            : scratch.
+
+# install the package
+
+[root@localhost yum.repos.d]# yum install vsftpd
+Loaded plugins: langpacks, product-id, search-disabled-repos, subscription-manager
+rhel_local_dvd                                                                | 2.9 kB  00:00:00     
+Resolving Dependencies
+--> Running transaction check
+---> Package vsftpd.x86_64 0:3.0.2-22.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+=====================================================================================================
+ Package            Arch               Version                  Repository                      Size
+=====================================================================================================
+Installing:
+ vsftpd             x86_64             3.0.2-22.el7             rhel-7-server-rpms             169 k
+
+Transaction Summary
+=====================================================================================================
+Install  1 Package
+
+Total download size: 169 k
+Installed size: 348 k
+Is this ok [y/d/N]: y
+Downloading packages:
+vsftpd-3.0.2-22.el7.x86_64.rpm                                                | 169 kB  00:00:00     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : vsftpd-3.0.2-22.el7.x86_64                                                        1/1 
+rhel-7-server-rpms/7Server/x86_64/productid                                   | 2.1 kB  00:00:00     
+rhel-7-server-rt-rpms/7Server/x86_64/productid                                | 2.1 kB  00:00:00     
+  Verifying  : vsftpd-3.0.2-22.el7.x86_64                                                        1/1 
+
+Installed:
+  vsftpd.x86_64 0:3.0.2-22.el7                                                                       
+
+Complete!
+
+# Verify and check firewall service.... Enable it and start the service
+
+# enable firewalld.service
+[root@localhost yum.repos.d]# systemctl enable firewalld.service
+
+# verify it is in-fact enabled
+[root@localhost yum.repos.d]# systemctl list-unit-files --type=service | grep "firewalld.service"
+firewalld.service                             enabled 
+
+
+# Start the service and view it's status
+[root@localhost yum.repos.d]# systemctl start firewalld.service
+[root@localhost yum.repos.d]# systemctl status firewalld.service
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+   Active: active (running) since Sun 2018-06-03 09:10:35 PDT; 28min ago
+     Docs: man:firewalld(1)
+ Main PID: 756 (firewalld)
+    Tasks: 2
+   CGroup: /system.slice/firewalld.service
+           └─756 /usr/bin/python -Es /usr/sbin/firewalld --nofork --nopid
+
+Jun 03 09:10:30 localhost.localdomain systemd[1]: Starting firewalld - dynamic firewall daemon...
+Jun 03 09:10:35 localhost.localdomain systemd[1]: Started firewalld - dynamic firewall daemon.
+************************************************************************************************************************
+
+# Enable, start, and check status of vsftp service
+
+[root@localhost yum.repos.d]# systemctl enable vsftpd
+Created symlink from /etc/systemd/system/multi-user.target.wants/vsftpd.service to /usr/lib/systemd/system/vsftpd.service.
+[root@localhost yum.repos.d]# systemctl sta vsftpd
+start   status  
+[root@localhost yum.repos.d]# systemctl start vsftpd
+[root@localhost yum.repos.d]# systemctl status vsftpd
+● vsftpd.service - Vsftpd ftp daemon
+   Loaded: loaded (/usr/lib/systemd/system/vsftpd.service; enabled; vendor preset: disabled)
+   Active: active (running) since Sun 2018-06-03 09:47:56 PDT; 7s ago
+  Process: 2791 ExecStart=/usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf (code=exited, status=0/SUCCESS)
+ Main PID: 2793 (vsftpd)
+    Tasks: 1
+   CGroup: /system.slice/vsftpd.service
+           └─2793 /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf
+
+Jun 03 09:47:56 localhost.localdomain systemd[1]: Starting Vsftpd ftp daemon...
+Jun 03 09:47:56 localhost.localdomain systemd[1]: Started Vsftpd ftp daemon.
+***************************************************************************************************************************
+
+# Create some dummy 'test' files in /var/ftp/pub
+# pub =====> is a hosted directory
+
+# creates files(1 thru 20)
+[root@localhost ~]# touch /var/ftp/pub/file{1..20}.txt
+
+# view the directory
+[root@localhost ~]# ll /var/ftp/pub/
+total 0
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file10.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file11.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file12.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file13.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file14.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file15.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file16.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file17.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file18.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file19.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file1.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file20.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file2.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file3.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file4.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file5.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file6.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file7.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file8.txt
+-rw-r--r--. 1 root root 0 Jun  3 09:54 file9.txt
+
+# configure the hosts file on SERVER
+$ vim /etc/hosts
+
+# add the IP_address TAB domain_name TAB Unique identifier
+
+
+# add ftp to firewall on SERVER
+ $ firewall-cmd --permanent --add-service=ftp
+success
+
+# reload the service
+firewall-cmd --reload
+
+# Send files via scp to ftp server
+
+$ scp <$files> root@10.0.0.17:/var/ftp/pub
+
+################################################################################################################################
+
+Exercise: Filesystem ACLs
+
+Create a second user on the system called "starbuck".  Open a second terminal window for the lab server, and connect as the user starbuck. Ensure you're working as a priviledged user (sudo) or root user while perofrming the lab. The starbuck user will be used to test setting the permissions.
+Navigate into the /tmp directory, create two new directories named "dir1" and "dir2" and two files called "file1" and "file2".
+Idenity if any of the files currently have extended access control lists associated with them.
+Set an ACL for the starbuck user to read and write for file1.
+Set the mask on the file1 to read only, then as the starbuck user, attempt to execute the following command: echo "test" > /tmp/file1. Why does this fail?
+Set the default permissions on dir1 to read, write and execute for the starbuck user; execute only if it is a directory.
+Using setfacl, change the "other" permissions to none on file1.
+Remove the default permissions from dir1.
+Remove all ACLs on file1.
+
+*******************************************************************************************************************************
+
+SOULTION EXERCISE : FILESYSTEM ACLS
+
+1. Create a second user on the system called "starbuck".  Open a second terminal window for the lab server, and connect as the user starbuck. Ensure you're working as a priviledged user (sudo) or root user while perofrming the lab. The starbuck user will be used to test setting the permissions.
+
+[root@localhost ~]# useradd starbuck; passwd starbuck
+Changing password for user starbuck.
+New password: 
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+2. Navigate into the /tmp directory, create two new directories named "dir1" and "dir2" and two files called "file1" and "file2".
+
+[root@localhost tmp]# mkdir {dir1,dir2}; touch {file1,file2}
+3. Idenity if any of the files currently have extended access control lists associated with them.
+
+[root@localhost tmp]# ls -l
+total 0
+drwxr-xr-x. 2 root root 6 May  5 20:00 dir1
+drwxr-xr-x. 2 root root 6 May  5 20:00 dir2
+-rw-r--r--. 1 root root 0 May  5 20:00 file1
+-rw-r--r--. 1 root root 0 May  5 20:00 file2
+Note: The files have base ACLs but do not have extended ACLs. We know they do not have extended ACLs because of the lacl of "+" at the end of the permissions listed.
+
+4. Set an ACL for the starbuck user to read and write for file1.
+
+[root@localhost tmp]# setfacl -m u:starbuck:rw file1
+[root@localhost tmp]# getfacl file1
+# file: file1
+# owner: root
+# group: root
+user::rw-
+user:starbuck:rw-
+group::r--
+mask::rw-
+other::r--
+5. Set the mask on the file1 to read only, then as the starbuck user, attempt to execute the following command: echo "test" > /tmp/file1. Why does this fail?
+
+[root@localhost tmp]# setfacl -m m::r file1
+[root@localhost tmp]# getfacl file1
+# file: file1
+# owner: root
+# group: root
+user::rw-
+user:starbuck:rw- #effective:r--
+group::r--
+mask::r--
+other::r--
+Starbuck's Terminal
+[starbuck@localhost tmp]$ echo "test "> /tmp/file1
+-bash: /tmp/file1: Permission denied
+Summary: Starbuck was unable to write to file1 even though they had an ACL with rw, because the mask was setting the "maximum" permissions to r and was masking w.
+
+6. Set the default permissions on dir1 to read, write and execute for the starbuck user; execute only if it is a directory.
+
+[root@localhost tmp]# setfacl -d -m u:starbuck:rwX dir1
+[root@localhost tmp]# getfacl dir1
+# file: dir1
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+default:user::rwx
+default:user:starbuck:rwx
+default:group::r-x
+default:mask::rwx
+default:other::r-x
+7. Using setfacl, change the "other" permissions to none on file1.
+
+[root@localhost tmp]# setfacl -m o::- file1
+[root@localhost tmp]# ls -l
+total 8
+drwxr-xr-x+ 2 root root 6 May  5 20:00 dir1
+drwxr-xr-x. 2 root root 6 May  5 20:00 dir2
+-rw-rw----+ 1 root root 0 May  5 20:00 file1
+-rw-r--r--. 1 root root 0 May  5 20:00 file2
+8. Remove the default permissions from dir1.
+
+[root@localhost tmp]# setfacl --remove-default dir1
+[root@localhost tmp]# getfacl dir1
+# file: dir1
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+9. Remove all ACLs on file1.
+
+[root@localhost tmp]# setfacl --remove-all file1
+[root@localhost tmp]# getfacl file1
+# file: file1
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::---
+
+#############################################################################################################################
+
+
+Create and Configure Set-GID Directories for Collaboration
+*********************************************************************
+
+umask default makes files as 666(rw-rw-rw) read, write permissions on owner:group:other
+umask default for directories is 777 (rwX-rwX-rwX) read, write and execute permissions on owner:group:other
+
+**Notice** how directories by default allow execution, this is because execution is needed in order to change directory(cd) into. However, you do not need execute permissions to ls or cat into a dir.
+
+
+# create finance and it dirs in root directory (/)
+[root@andre-merten-e7d00e0c1 ~]# mkdir {finance,it}
+
+# check the permissions
+# notice how the owner for the group is root.... this can present to problem when trying to collaborate with others
+[root@andre-merten-e7d00e0c1 ~]# ll
+total 3799052
+-rw-------. 1 root root       9227 Oct 17  2014 anaconda-ks.cfg
+drwxr-xr-x. 2 root root          6 Jun  4 20:35 finance
+drwxr-xr-x. 2 root root          6 Jun  4 20:35 it
+-rw-r--r--. 1 root root 3890216960 Feb 19  2015 rhel-server-7.1-x86_64-dvd.iso
+
+# apply set GID(group id) --> this allows all directories and files created to inherit the permissions of the parent directory
+# it also allows for execution of the user group of the file not the current user session.
+
+[root@andre-merten-e7d00e0c1 ~]# chmod g+s finance/
+
+[root@andre-merten-e7d00e0c1 ~]# ll
+total 3799052
+-rw-------. 1 root root       9227 Oct 17  2014 anaconda-ks.cfg
+
+# as you see now the GID has been set on the group. This is indentified by an 's'
+drwxr-sr-x. 2 root root          6 Jun  4 20:35 finance
+
+drwxr-xr-x. 2 root root          6 Jun  4 20:35 it
+-rw-r--r--. 1 root root 3890216960 Feb 19  2015 rhel-server-7.1-x86_64-dvd.iso
+
+# Now if a file is created, you notice that the permissions on doc1 are still root ownership and root group ownership
+# this is because setting the GID inheirtes the permissons of the parent directory, in this case the finance.
+[root@andre-merten-e7d00e0c1 ~]# cd finance/
+[root@andre-merten-e7d00e0c1 finance]# touch doc1
+[root@andre-merten-e7d00e0c1 finance]# ll
+total 0
+
+# file is still owned by root and owned by group root
+-rw-r--r--. 1 root root 0 Jun  4 20:53 doc1
+
+# change the group own to finance, this way anyone who is part of the finance group will be able to read all files currently...Let's fix this.
+
+# change the group ownership to finanace
+syntax: chown <owner>: group-owner <directory to apply to>
+# since we just include the field after the colon (:) we are modifying the group-ownership
+
+$ chown :finance finance/
+
+# now the group-ownership is by the finance group
+[root@andre-merten-e7d00e0c1 ~]# ll
+total 3799052
+-rw-------. 1 root root          9227 Oct 17  2014 anaconda-ks.cfg
+drwxr-sr-x. 2 root finance         39 Jun  4 22:10 finance
+drwxr-xr-x. 2 root root             6 Jun  4 20:35 it
+-rw-r--r--. 1 root root    3890216960 Feb 19  2015 rhel-server-7.1-x86_64-dvd.iso
+
+# now cd into finance/
+[root@andre-merten-e7d00e0c1 ~]# cd finance/
+
+# create a new document
+[root@andre-merten-e7d00e0c1 finance]# touch doc2
+[root@andre-merten-e7d00e0c1 finance]# ll
+total 0
+-rw-r--r--. 1 root root    0 Jun  4 20:53 doc1
+-rw-r--r--. 1 root finance 0 Jun  5 20:24 doc2 ----> Notice how now the group-owner is finance, this is because we set the parent directory and becuse of the set GUI it iheirted these permissons from the parent.
+
+***TEST*** Let's set the group-owner back to root and then cd into finance and create a new document.
+
+#change owner on group to root
+[root@andre-merten-e7d00e0c1 ~]# chown :root finance/
+
+[root@andre-merten-e7d00e0c1 ~]# ll
+total 3799052
+-rw-------. 1 root root       9227 Oct 17  2014 anaconda-ks.cfg
+drwxr-sr-x. 2 root root         28 Jun  5 20:24 finance
+drwxr-xr-x. 2 root root          6 Jun  4 20:35 it
+-rw-r--r--. 1 root root 3890216960 Feb 19  2015 rhel-server-7.1-x86_64-dvd.iso
+
+# go into finance dir
+[root@andre-merten-e7d00e0c1 ~]# cd finance/
+[root@andre-merten-e7d00e0c1 finance]# ll
+total 0
+-rw-r--r--. 1 root root    0 Jun  4 20:53 doc1
+-rw-r--r--. 1 root finance 0 Jun  5 20:24 doc2
+
+# create the new doc3
+[root@andre-merten-e7d00e0c1 finance]# touch doc3
+
+# notice how the group owner is back to root, again this is because we modified the parent directory.
+[root@andre-merten-e7d00e0c1 finance]# ll
+total 0
+-rw-r--r--. 1 root root    0 Jun  4 20:53 doc1
+-rw-r--r--. 1 root finance 0 Jun  5 20:24 doc2
+-rw-r--r--. 1 root root    0 Jun  5 20:30 doc3
+
+########################################################################################################################
+
+CREATE AND MANAGE ACCESS CONTROL LISTS (ACLs)
+*********************************************************
+
+# file systems that support ACLs by default are 'xfs' and 'ext4'
+
+# create a new user named 'starbuck'
+# set the password with 
+$ passwd starbuck
+
+# open two terminal windows, one as root and one as starbuck
+
+# cd into /tmp/ directory on both the root and starbuck, this is to demonstrate privledges.
+
+# getfacl - get file access control lists
+[root@andre-merten-e7d00e0c1 tmp]# getfacl file1
+# file: file1
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+For  each file, getfacl displays the file name, owner, the group, and the Access Con‐
+       trol List (ACL). If a directory has a default ACL, getfacl also displays the  default
+       ACL. Non-directories cannot have default ACLs.
+
+       If  getfacl is used on a file system that does not support ACLs, getfacl displays the
+       access permissions defined by the traditional file mode permission bits.
+
+       The output format of getfacl is as follows:
+	       1:  # file: somedir/
+               2:  # owner: lisa
+               3:  # group: staff
+               4:  # flags: -s-
+               5:  user::rwx
+               6:  user:joe:rwx               #effective:r-x
+               7:  group::rwx                 #effective:r-x
+               8:  group:cool:r-x
+               9:  mask::r-x
+              10:  other::r-x
+              11:  default:user::rwx
+              12:  default:user:joe:rwx       #effective:r-x
+              13:  default:group::r-x
+              14:  default:mask::r-x
+              15:  default:other::---
+
+       Lines 1--3 indicate the file name, owner, and owning group.
+       
+       Line 4 indicates the setuid (s), setgid (s), and sticky (t) bits: either  the  letter
+       representing  the bit, or else a dash (-). This line is included if any of those bits
+       is set and left out otherwise, so it will not be shown for most files.  (See  CONFOR‐
+       MANCE TO POSIX 1003.1e DRAFT STANDARD 17 below.)
+
+       Lines  5,  7  and  10 correspond to the user, group and other fields of the file mode
+       permission bits. These three are called the base ACL entries. Lines 6 and 8 are named
+       user  and named group entries. Line 9 is the effective rights mask. This entry limits
+       the effective rights granted to all groups and to named users. (The  file  owner  and
+       others  permissions  are not affected by the effective rights mask; all other entries
+       are.)  Lines 11--15 display the default ACL associated with this directory.  Directo‐
+       ries may have a default ACL. Regular files never have a default ACL.
+
+       The  default behavior for getfacl is to display both the ACL and the default ACL, and
+       to include an effective rights comment for lines where the rights of the entry differ
+       from the effective rights.
+
+       If  output  is  to  a terminal, the effective rights comment is aligned to column 40.
+       Otherwise, a single tab character separates the ACL entry and  the  effective  rights
+       comment.
+
+       The  ACL listings of multiple files are separated by blank lines.  The output of get‐
+       facl can also be used as input to setfacl.
+
+       PERMISSIONS
+       Process with search access to a file (i.e., processes with read access  to  the  con‐
+       taining  directory  of a file) are also granted read access to the file's ACLs.  This
+       is analogous to the permissions required for accessing the file mode.
+********************************************************************************************************************
+
+SETTING THE ACL ON A SPECIFIC USER
+**Note** you can either pass the username or the user id
+
+How can I find my User ID UID from terminal?
+
+There are a couple of ways:
+
+Using the id command you can get the real and effective user and group IDs.
+
+id -u <username>
+If no username is supplied to id, it will default to the current user.
+
+Using the enviroment variable.
+
+echo $UID
+
+******************************************************************************************************
+
+# set the acl on (u)ser 'starbuck' by (m)odifying the the file permissions to (r)ead, (w)rite.
+[root@andre-merten-e7d00e0c1 tmp]# setfacl -m u:starbuck:rw file1
+
+**NOTE** you can also use the $UID (user id)
+[root@andre-merten-e7d00e0c1 tmp]# setfacl -m u:1003:rw file1
+
+# get starbuck's uid
+[root@andre-merten-e7d00e0c1 tmp]# id -u starbuck
+1003
+
+##################################
+
+[root@andre-merten-e7d00e0c1 tmp]# getfacl file1
+# file: file1
+# owner: root
+# group: root
+user::rw-
+user:starbuck:rw-   ------------> Now user:starbuck has read/write permissions on file1, even though he doesn't belong to group
+group::r--
+mask::rw-  
+other::r--
+
+# set the mask to rwx(read,write,execute) on file1
+[root@andre-merten-e7d00e0c1 tmp]# setfacl -m m::rwx file1
+
+[root@andre-merten-e7d00e0c1 tmp]# getfacl file1
+# file: file1
+# owner: root
+# group: root
+user::rw-
+user:starbuck:rw-
+group::r--
+mask::rwx ------------> Notice the change here
+other::r--
+
+# you can also change it with chmod which will modify the mask
+[root@andre-merten-e7d00e0c1 tmp]# chmod 000 file1
+[root@andre-merten-e7d00e0c1 tmp]# getfacl file1
+# file: file1
+# owner: root
+# group: root
+user::---
+user:starbuck:rw-               #effective:--- | ------------> THIS TAKES PREFERENCE OVER USER PERMISSIONS
+group::r--                      #effective:---
+mask::---
+other::---
+
+
+############################################################################################################################
+
+TROUBLESHOOTING NETWORK ISSUES
+
+*****************************************************
+
+#first thing is to test if you have a working internet access
+$ ping www.google.com
+
+# ping 5 times and then quit
+$ ping -c5 www.google.com
+
+# if you are getting responses then you do in fact have an internet connection.
+
+# get ip information
+$ ifconfig ----->  soon to be depricated
+$ ip addr
+
+# to view sockets, with established connections and listening use ss.
+$ ss -atn
+
+# to show ip information that pertans to your internet use ip -s
+
+$ [root@andre-merten-e7d00e0c1 ~]# ip -s link show eth0
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9001 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000
+    link/ether 06:57:8e:4d:c9:b2 brd ff:ff:ff:ff:ff:ff
+    RX: bytes  packets  errors  dropped overrun mcast   
+    827556     2966     0       0       0       0       
+    TX: bytes  packets  errors  dropped carrier collsns 
+    511983     2873     0       0       0       0
+########################################################################################################################3
+
+Configure Networking and Hostname Resolution Statically or Dynamically: Network Manager
+
+# to check and find out what network devices are connected to the system
+
+1. $ ls /sys/class/net  -------> this is a kind of virtual file system
+
+2. $ nmcli dev status
+
+andre@andre-ThinkPad-S3-Yoga-14:~$ ls /sys/class/net/
+lo  wlp2s0
+andre@andre-ThinkPad-S3-Yoga-14:~$ nmcli dev status
+DEVICE  TYPE      STATE      CONNECTION       
+wlp2s0  wifi      connected  HOME-1B08_optout 
+lo      loopback  unmanaged  --    
+
+##################################################################################################################
+
+# for network connection editing on a 'GUI' based target use:
+$ nm-connection-editor
+
+
+# for a command line text base version use:
+$ nmtui
+
+# USING NMCLI
+
+# nmcli <tab> x2 to bring up options
+
+andre@andre-ThinkPad-S3-Yoga-14:~$ nmcli 
+agent       connection  device      general     help        monitor     networking  radio
+
+
+#check connected network devices
+
+$ nmcli dev status
+
+# show all network connections currently on system
+
+$ nmcli con show
+
+# are connections are configurable, these files are located in /etc/sysconfig/network-scripts/
+# each device is associated with a config file
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

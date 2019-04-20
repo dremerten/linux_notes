@@ -1,0 +1,259 @@
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 May05 ?        00:00:04 /sbin/init splash
+root         2     0  0 May05 ?        00:00:00 [kthreadd]
+root         3     2  0 May05 ?        00:00:01 [ksoftirqd/0]
+root         5     2  0 May05 ?        00:00:00 [kworker/0:0H]
+root         7     2  0 May05 ?        00:00:29 [rcu_sched]
+root         8     2  0 May05 ?        00:00:00 [rcu_bh]
+root         9     2  0 May05 ?        00:00:00 [migration/0]
+root        10     2  0 May05 ?        00:00:00 [watchdog/0]
+root        11     2  0 May05 ?        00:00:00 [watchdog/1]
+root        12     2  0 May05 ?        00:00:00 [migration/1]
+root        13     2  0 May05 ?        00:00:00 [ksoftirqd/1]
+root        15     2  0 May05 ?        00:00:00 [kworker/1:0H]
+root        16     2  0 May05 ?        00:00:00 [watchdog/2]
+root        17     2  0 May05 ?        00:00:00 [migration/2]
+root        18     2  0 May05 ?        00:00:01 [ksoftirqd/2]
+root        20     2  0 May05 ?        00:00:00 [kworker/2:0H]
+root        21     2  0 May05 ?        00:00:00 [watchdog/3]
+root        22     2  0 May05 ?        00:00:00 [migration/3]
+root        23     2  0 May05 ?        00:00:02 [ksoftirqd/3]
+root        25     2  0 May05 ?        00:00:00 [kworker/3:0H]
+root        26     2  0 May05 ?        00:00:00 [kdevtmpfs]
+root        27     2  0 May05 ?        00:00:00 [netns]
+root        28     2  0 May05 ?        00:00:00 [perf]
+root        29     2  0 May05 ?        00:00:00 [khungtaskd]
+root        30     2  0 May05 ?        00:00:00 [writeback]
+root        31     2  0 May05 ?        00:00:00 [ksmd]
+root        32     2  0 May05 ?        00:00:00 [khugepaged]
+root        33     2  0 May05 ?        00:00:00 [crypto]
+root        34     2  0 May05 ?        00:00:00 [kintegrityd]
+root        35     2  0 May05 ?        00:00:00 [bioset]
+root        36     2  0 May05 ?        00:00:00 [kblockd]
+root        37     2  0 May05 ?        00:00:00 [ata_sff]
+root        38     2  0 May05 ?        00:00:00 [md]
+root        39     2  0 May05 ?        00:00:00 [devfreq_wq]
+root        44     2  0 May05 ?        00:00:04 [kswapd0]
+root        45     2  0 May05 ?        00:00:00 [vmstat]
+root        46     2  0 May05 ?        00:00:00 [fsnotify_mark]
+root        47     2  0 May05 ?        00:00:00 [ecryptfs-kthrea]
+root        63     2  0 May05 ?        00:00:00 [kthrotld]
+root        64     2  0 May05 ?        00:00:00 [acpi_thermal_pm]
+root        65     2  0 May05 ?        00:00:00 [bioset]
+root        67     2  0 May05 ?        00:00:00 [bioset]
+root        68     2  0 May05 ?        00:00:00 [bioset]
+root        69     2  0 May05 ?        00:00:00 [bioset]
+root        70     2  0 May05 ?        00:00:00 [bioset]
+root        71     2  0 May05 ?        00:00:00 [bioset]
+root        72     2  0 May05 ?        00:00:00 [bioset]
+root        73     2  0 May05 ?        00:00:00 [bioset]
+root        77     2  0 May05 ?        00:00:00 [ipv6_addrconf]
+root        91     2  0 May05 ?        00:00:00 [deferwq]
+root        92     2  0 May05 ?        00:00:00 [charger_manager]
+root       139     2  0 May05 ?        00:00:00 [kpsmoused]
+root       144     2  0 May05 ?        00:00:00 [scsi_eh_0]
+root       145     2  0 May05 ?        00:00:00 [scsi_tmf_0]
+root       146     2  0 May05 ?        00:00:00 [scsi_eh_1]
+root       147     2  0 May05 ?        00:00:00 [scsi_tmf_1]
+root       148     2  0 May05 ?        00:00:00 [scsi_eh_2]
+root       149     2  0 May05 ?        00:00:00 [scsi_tmf_2]
+root       152     2  0 May05 ?        00:00:00 [nvidia-modeset]
+root       177     2  0 May05 ?        00:00:00 [bioset]
+root       178     2  0 May05 ?        00:00:00 [bioset]
+root       192     2  0 May05 ?        00:00:02 [kworker/0:1H]
+root       193     2  0 May05 ?        00:00:00 [kworker/1:1H]
+root       194     2  0 May05 ?        00:00:00 [kworker/2:1H]
+root       195     2  0 May05 ?        00:00:02 [kworker/3:1H]
+root       276     2  0 May05 ?        00:00:00 [kdmflush]
+root       307     2  0 May05 ?        00:00:00 [bioset]
+root       308     2  0 May05 ?        00:00:00 [kcryptd_io]
+root       309     2  0 May05 ?        00:00:00 [kcryptd]
+root       310     2  0 May05 ?        00:00:08 [dmcrypt_write]
+root       311     2  0 May05 ?        00:00:00 [bioset]
+root       323     2  0 May05 ?        00:00:00 [kdmflush]
+root       324     2  0 May05 ?        00:00:00 [bioset]
+root       330     2  0 May05 ?        00:00:00 [kdmflush]
+root       332     2  0 May05 ?        00:00:00 [bioset]
+root       362     2  0 May05 ?        00:00:03 [jbd2/dm-1-8]
+root       363     2  0 May05 ?        00:00:00 [ext4-rsv-conver]
+root       398     1  0 May05 ?        00:00:01 /lib/systemd/systemd-journald
+root       405     2  0 May05 ?        00:00:00 [kauditd]
+andre      434  2249  0 May08 ?        00:00:00 /usr/bin/unity-scope-loader applications/applications.scope applications/scopes.scope commands.scope
+root       438     1  0 May05 ?        00:00:00 /sbin/lvmetad -f
+root       449     1  0 May05 ?        00:00:01 /lib/systemd/systemd-udevd
+root       522     2  0 May05 ?        00:00:00 [loop0]
+root       524     2  0 May05 ?        00:00:00 [loop1]
+root       529     2  0 May05 ?        00:00:00 [loop2]
+root       533     2  0 May05 ?        00:00:00 [loop3]
+root       536     1  0 May08 tty4     00:00:00 /sbin/agetty --noclear tty4 linux
+root       537     2  0 May05 ?        00:00:00 [loop5]
+root       538     2  0 May05 ?        00:00:00 [loop6]
+root       540     2  0 May05 ?        00:00:00 [loop7]
+root       656     2  0 May05 ?        00:00:00 [cfg80211]
+root       659     2  0 May05 ?        00:00:58 [irq/44-iwlwifi]
+root       660     2  0 May05 ?        00:00:03 [kworker/u17:0]
+root       674     2  0 May07 ?        00:00:00 [bioset]
+root       675     2  0 May07 ?        00:00:00 [loop8]
+root       683     2  0 May05 ?        00:00:00 [ktpacpid]
+root       705     2  0 May05 ?        00:00:00 [kvm-irqfd-clean]
+root       822     2  0 May05 ?        00:00:00 [UVM global queu]
+root       823     2  0 May05 ?        00:00:00 [UVM Tools Event]
+root      1063     2  0 May05 ?        00:00:00 [ext4-rsv-conver]
+systemd+  1118     1  0 May05 ?        00:00:00 /lib/systemd/systemd-timesyncd
+root      1302     1  0 May05 ?        00:00:00 /usr/sbin/ModemManager
+root      1303     1  0 May05 ?        00:00:00 /lib/systemd/systemd-logind
+message+  1308     1  0 May05 ?        00:00:26 /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation
+root      1335     1  0 May05 ?        00:00:00 /usr/lib/bluetooth/bluetoothd
+avahi     1347     1  0 May05 ?        00:00:00 avahi-daemon: running [andre-ThinkPad-S3-Yoga-14.local]
+root      1368     1  0 May05 ?        00:00:01 /usr/lib/accountsservice/accounts-daemon
+root      1370     1  0 May05 ?        00:00:04 /usr/sbin/thermald --no-daemon --dbus-enable
+root      1379     1  0 May05 ?        00:00:31 /usr/sbin/NetworkManager --no-daemon
+root      1383     1  0 May05 ?        00:00:03 /usr/sbin/acpid
+root      1387     1  0 May05 ?        00:00:00 /usr/sbin/cron -f
+syslog    1389     1  0 May05 ?        00:00:00 /usr/sbin/rsyslogd -n
+avahi     1464  1347  0 May05 ?        00:00:00 avahi-daemon: chroot helper
+root      1467     1  0 May05 ?        00:00:03 /usr/sbin/irqbalance --pid=/var/run/irqbalance.pid
+root      1511     1  0 May05 ?        00:00:00 /usr/sbin/lightdm
+root      1513     1  0 May05 ?        00:00:01 /usr/lib/policykit-1/polkitd --no-debug
+root      1527  1511  1 May05 tty7     01:35:21 /usr/lib/xorg/Xorg -core :0 -seat seat0 -auth /var/run/lightdm/root/:0 -nolisten tcp vt7 -novtswitch
+memcache  1545     1  0 May05 ?        00:00:02 /usr/bin/memcached -m 64 -p 11211 -u memcache -l 127.0.0.1
+root      1575     1  0 May05 ?        00:00:03 /sbin/wpa_supplicant -u -s -O /run/wpa_supplicant
+root      1586     2  0 May05 ?        00:05:41 [irq/59-nvidia]
+whoopsie  1593     1  0 May05 ?        00:00:02 /usr/bin/whoopsie -f
+nvidia-+  1612     1  0 May05 ?        00:00:00 /usr/bin/nvidia-persistenced --user nvidia-persistenced --no-persistence-mode --verbose
+root      1614     1  0 May05 tty1     00:00:00 /sbin/agetty --noclear tty1 linux
+root      1631     2  0 May05 ?        00:00:00 [iprt-VBoxWQueue]
+root      1635     2  0 May05 ?        00:00:00 [iprt-VBoxTscThr]
+root      1684     1  0 May05 ?        00:00:00 /bin/bash /usr/bin/mysqld_safe
+root      1692     1  0 20:25 ?        00:00:00 /usr/sbin/sshd -D
+mysql     1828  1684  0 May05 ?        00:00:47 /usr/sbin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql --skip-log-error --pid-file=/var/run/mysqld/mysqld.pid --socket=/var/run/mysqld/mysqld.sock --port=3306
+root      1829  1684  0 May05 ?        00:00:00 logger -t mysqld -p daemon error
+root      2077  1511  0 May05 ?        00:00:00 lightdm --session-child 12 19
+root      2144     1  0 May05 ?        00:00:01 /usr/lib/upower/upowerd
+rtkit     2153     1  0 May05 ?        00:00:00 /usr/lib/rtkit/rtkit-daemon
+colord    2209     1  0 May05 ?        00:00:00 /usr/lib/colord/colord
+andre     2236     1  0 May05 ?        00:00:00 /lib/systemd/systemd --user
+andre     2237  2236  0 May05 ?        00:00:00 (sd-pam)
+andre     2243     1  0 May05 ?        00:00:08 /usr/bin/gnome-keyring-daemon --daemonize --login
+andre     2246     1  0 May05 ?        00:00:02 /usr/bin/kwalletd --pam-login 8 11 --nofork
+andre     2248     1  0 May05 ?        00:00:06 /usr/bin/kwalletd5 --pam-login 8 13
+andre     2249  2077  0 May05 ?        00:00:00 /sbin/upstart --user
+andre     2359  2249  0 May05 ?        00:00:00 upstart-udev-bridge --daemon --user
+andre     2369  2249  0 May05 ?        00:00:14 dbus-daemon --fork --session --address=unix:abstract=/tmp/dbus-ioIBbbA9V5
+andre     2381  2249  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/hud/window-stack-bridge
+andre     2405  2249  0 May05 ?        00:00:02 upstart-dbus-bridge --daemon --session --user --bus-name session
+andre     2406  2249  0 May05 ?        00:00:03 upstart-dbus-bridge --daemon --system --user --bus-name system
+andre     2416  2249  0 May05 ?        00:00:00 upstart-file-bridge --daemon --user
+andre     2431  2249  0 May05 ?        00:00:52 /usr/bin/ibus-daemon --daemonize --xim --address unix:tmpdir=/tmp/ibus
+andre     2441  2249  0 May05 ?        00:00:00 /usr/lib/gvfs/gvfsd
+andre     2446  2249  0 May05 ?        00:00:00 /usr/lib/gvfs/gvfsd-fuse /run/user/1000/gvfs -f -o big_writes
+andre     2463  2249  0 May05 ?        00:00:10 /usr/lib/x86_64-linux-gnu/bamf/bamfdaemon
+andre     2465  2431  0 May05 ?        00:00:00 /usr/lib/ibus/ibus-dconf
+andre     2466  2431  0 May05 ?        00:00:12 /usr/lib/ibus/ibus-ui-gtk3
+nobody    2467  1379  0 May05 ?        00:00:02 /usr/sbin/dnsmasq --no-resolv --keep-in-foreground --no-hosts --bind-interfaces --pid-file=/var/run/NetworkManager/dnsmasq.pid --listen-address=127.0.1.1 --cache-size=0 --conf-file=/dev/null --proxy-dnssec --enable-dbus=org.freedesktop.NetworkManager.dnsmasq --conf-dir=/etc/NetworkManager/dnsmasq.d
+andre     2473  2249  0 May05 ?        00:00:01 /usr/lib/ibus/ibus-x11 --kill-daemon
+andre     2528  2431  0 May05 ?        00:00:14 /usr/lib/ibus/ibus-engine-simple
+andre     2548  2249  0 May05 ?        00:00:01 gpg-agent --homedir /home/andre/.gnupg --use-standard-socket --daemon
+andre     2665  2249  0 May05 ?        00:00:08 /usr/lib/x86_64-linux-gnu/hud/hud-service
+andre     2667  2249  0 May05 ?        00:01:03 /usr/lib/unity-settings-daemon/unity-settings-daemon
+andre     2672  2249  0 May05 ?        00:00:00 /usr/lib/at-spi2-core/at-spi-bus-launcher --launch-immediately
+andre     2675  2249  0 May05 ?        00:00:00 /usr/lib/gnome-session/gnome-session-binary --session=ubuntu
+andre     2687  2672  0 May05 ?        00:00:01 /usr/bin/dbus-daemon --config-file=/etc/at-spi2/accessibility.conf --nofork --print-address 3
+andre     2688  2249  0 May05 ?        00:00:29 /usr/lib/x86_64-linux-gnu/unity/unity-panel-service
+andre     2696  2249  0 May05 ?        00:00:07 /usr/lib/at-spi2-core/at-spi2-registryd --use-gnome-session
+andre     2730  2249  0 May05 ?        00:00:00 /usr/lib/dconf/dconf-service
+andre     2738  2249  0 May05 ?        00:18:01 compiz
+andre     2743  2249  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/indicator-messages/indicator-messages-service
+andre     2746  2249  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/indicator-bluetooth/indicator-bluetooth-service
+andre     2747  2249  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/indicator-power/indicator-power-service
+andre     2756  2249  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/indicator-datetime/indicator-datetime-service
+andre     2757  2249  0 May05 ?        00:00:01 /usr/lib/x86_64-linux-gnu/indicator-keyboard/indicator-keyboard-service --use-gtk
+andre     2758  2249  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/indicator-sound/indicator-sound-service
+andre     2759  2249  0 May05 ?        00:00:01 /usr/lib/x86_64-linux-gnu/indicator-printers/indicator-printers-service
+andre     2760  2249  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/indicator-session/indicator-session-service
+andre     2778  2249  0 May05 ?        00:00:05 /usr/lib/x86_64-linux-gnu/indicator-application/indicator-application-service
+andre     2802  2249  0 May05 ?        00:00:00 /usr/lib/evolution/evolution-source-registry
+andre     2810  2249  0 May05 ?        00:13:03 /usr/bin/pulseaudio --start --log-target=syslog
+andre     2816  2667  0 May05 ?        00:00:02 syndaemon -i 1.0 -t -K -R
+andre     2820  2249  0 May05 ?        00:00:07 /usr/lib/x86_64-linux-gnu/notify-osd
+andre     2834  2249  0 May05 ?        00:00:00 /usr/lib/evolution/evolution-calendar-factory
+andre     2851  2675  0 May05 ?        00:00:01 indicator-keylock
+andre     2853  2675  0 May05 ?        00:00:09 /usr/bin/gnome-software --gapplication-service
+andre     2857  2675  0 May05 ?        00:00:01 /usr/lib/unity-settings-daemon/unity-fallback-mount-helper
+andre     2858  2675  0 May05 ?        00:00:40 nm-applet
+andre     2860  2675  0 May05 ?        00:00:33 /usr/bin/python3 /usr/share/battery-monitor/battery-monitor.py
+andre     2862  2675  0 May05 ?        00:00:01 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
+andre     2868  2675  0 May05 ?        00:01:02 nautilus -n
+andre     2869  2675  0 May05 ?        00:00:10 /usr/lib/x86_64-linux-gnu/libexec/kdeconnectd
+andre     2894  2249  0 May05 ?        00:00:00 /usr/lib/gvfs/gvfs-udisks2-volume-monitor
+andre     2907  2249  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/gconf/gconfd-2
+root      2914     1  0 May05 ?        00:00:15 /usr/lib/udisks2/udisksd --no-debug
+root      2936     1  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/fwupd/fwupd
+andre     2948  2249  0 May05 ?        00:00:00 /usr/lib/gvfs/gvfs-afc-volume-monitor
+andre     2954  2249  0 May05 ?        00:00:00 /usr/lib/gvfs/gvfs-mtp-volume-monitor
+andre     2959  2249  0 May05 ?        00:00:00 /usr/lib/gvfs/gvfs-goa-volume-monitor
+andre     2973  2249  0 May05 ?        00:00:00 /usr/lib/gvfs/gvfs-gphoto2-volume-monitor
+andre     2996  2249  0 May05 ?        00:00:02 /usr/lib/gvfs/gvfsd-trash --spawner :1.4 /org/gtk/gvfs/exec_spaw/0
+andre     3037  2249  0 May05 ?        00:00:00 /usr/lib/gvfs/gvfsd-metadata
+root      3044     2  0 20:42 ?        00:00:00 [kworker/1:2]
+andre     3055  2834  0 May05 ?        00:00:01 /usr/lib/evolution/evolution-calendar-factory-subprocess --factory contacts --bus-name org.gnome.evolution.dataserver.Subprocess.Backend.Calendarx2834x2 --own-path /org/gnome/evolution/dataserver/Subprocess/Backend/Calendar/2834/2
+andre     3066  2249  0 May05 ?        00:00:00 /usr/lib/evolution/evolution-addressbook-factory
+andre     3070  2834  0 May05 ?        00:00:01 /usr/lib/evolution/evolution-calendar-factory-subprocess --factory local --bus-name org.gnome.evolution.dataserver.Subprocess.Backend.Calendarx2834x3 --own-path /org/gnome/evolution/dataserver/Subprocess/Backend/Calendar/2834/3
+andre     3089  3066  0 May05 ?        00:00:00 /usr/lib/evolution/evolution-addressbook-factory-subprocess --factory local --bus-name org.gnome.evolution.dataserver.Subprocess.Backend.AddressBookx3066x2 --own-path /org/gnome/evolution/dataserver/Subprocess/Backend/AddressBook/3066/2
+andre     3123  2675  0 May05 ?        00:00:08 zeitgeist-datahub
+andre     3130  2249  0 May05 ?        00:00:00 /bin/sh -c /usr/lib/x86_64-linux-gnu/zeitgeist/zeitgeist-maybe-vacuum; /usr/bin/zeitgeist-daemon
+andre     3134  3130  0 May05 ?        00:00:00 /usr/bin/zeitgeist-daemon
+andre     3141  2249  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/zeitgeist-fts
+andre     3252  2675  0 May05 ?        00:00:03 update-notifier
+andre     3369  2675  0 May05 ?        00:00:00 /usr/lib/x86_64-linux-gnu/deja-dup/deja-dup-monitor
+andre     3507  2249  0 20:50 ?        00:00:08 konsole
+andre     3519  3507  0 20:50 pts/18   00:00:00 /bin/bash
+root      4017     2  0 20:56 ?        00:00:00 [kworker/u16:5]
+root      4272     2  0 21:00 ?        00:00:00 [kworker/2:0]
+andre     4290  2249  0 May05 ?        00:00:00 /usr/lib/gvfs/gvfsd-network --spawner :1.4 /org/gtk/gvfs/exec_spaw/1
+root      4296     2  0 21:00 ?        00:00:00 [kworker/1:1]
+andre     4323  2249  0 May05 ?        00:00:00 /usr/lib/gvfs/gvfsd-dnssd --spawner :1.4 /org/gtk/gvfs/exec_spaw/5
+root      4565     2  0 21:05 ?        00:00:00 [kworker/u16:2]
+root      4584     2  0 21:05 ?        00:00:00 [kworker/0:1]
+root      4659     2  0 21:07 ?        00:00:00 [kworker/3:1]
+root      4974     2  0 21:11 ?        00:00:00 [kworker/0:0]
+root      5240     2  0 21:15 ?        00:00:00 [kworker/3:2]
+root      5526     2  0 21:20 ?        00:00:00 [kworker/2:1]
+andre     5707 16130  3 21:23 ?        00:00:05 /opt/google/chrome/chrome --type=renderer --field-trial-handle=13557574425540539982,8732592171975764318,131072 --disable-gpu-compositing --service-pipe-token=FDC10414EE32DDC7C3A1E96F282075AB --lang=en-US --enable-offline-auto-reload --enable-offline-auto-reload-visible-only --num-raster-threads=2 --enable-main-frame-before-activation --enable-compositor-image-animations --service-request-channel-token=FDC10414EE32DDC7C3A1E96F282075AB --renderer-client-id=207 --shared-files=v8_context_snapshot_data:100,v8_natives_data:101
+root      5748     2  0 21:24 ?        00:00:00 [kworker/u16:1]
+root      5847     2  0 21:25 ?        00:00:00 [kworker/2:2]
+root      5905     2  0 21:26 ?        00:00:00 [kworker/3:0]
+andre     5908  3519  0 21:26 pts/18   00:00:00 ps -ef
+root      7751     2  0 May05 ?        00:00:00 [dio/dm-1]
+root     11645     2  0 May06 ?        00:00:00 [krfcommd]
+root     15293     2  0 May08 ?        00:00:00 [kworker/u17:2]
+andre    15917  2249  0 May06 ?        00:00:00 /usr/lib/gvfs/gvfsd-http --spawner :1.4 /org/gtk/gvfs/exec_spaw/6
+andre    16115  2249  1 May09 ?        00:20:19 /opt/google/chrome/chrome
+andre    16122 16115  0 May09 ?        00:00:00 cat
+andre    16123 16115  0 May09 ?        00:00:00 cat
+andre    16126 16115  0 May09 ?        00:00:00 /opt/google/chrome/chrome --type=zygote
+andre    16127 16126  0 May09 ?        00:00:00 /opt/google/chrome/nacl_helper
+andre    16130 16126  0 May09 ?        00:00:00 /opt/google/chrome/chrome --type=zygote
+andre    16185 16115  0 May09 ?        00:00:00 /opt/google/chrome/chrome --type=gpu-process --field-trial-handle=13557574425540539982,8732592171975764318,131072 --gpu-preferences=KAAAAAAAAACAAACAAQAAAAAAAAAAAGAAEAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAA --use-gl=swiftshader-webgl --service-request-channel-token=FFE3E6BF6D89F90AB99EFB4E4F0FFED6
+andre    16189 16185  0 May09 ?        00:00:00 /opt/google/chrome/chrome --type=-broker
+andre    16269 16130  0 May09 ?        00:00:00 /opt/google/chrome/chrome --type=renderer --field-trial-handle=13557574425540539982,8732592171975764318,131072 --service-pipe-token=C954E4AE9F5A088FC2B5A4763BCF175A --lang=en-US --extension-process --enable-offline-auto-reload --enable-offline-auto-reload-visible-only --num-raster-threads=2 --enable-main-frame-before-activation --enable-compositor-image-animations --service-request-channel-token=C954E4AE9F5A088FC2B5A4763BCF175A --renderer-client-id=3 --shared-files=v8_context_snapshot_data:100,v8_natives_data:101
+andre    16278 16130  0 May09 ?        00:00:00 /opt/google/chrome/chrome --type=renderer --field-trial-handle=13557574425540539982,8732592171975764318,131072 --disable-gpu-compositing --service-pipe-token=5B9E465CD5324D18EBDAB2CA2EDBAF18 --lang=en-US --extension-process --enable-offline-auto-reload --enable-offline-auto-reload-visible-only --num-raster-threads=2 --enable-main-frame-before-activation --enable-compositor-image-animations --service-request-channel-token=5B9E465CD5324D18EBDAB2CA2EDBAF18 --renderer-client-id=4 --shared-files=v8_context_snapshot_data:100,v8_natives_data:101
+andre    17038 16130  0 May09 ?        00:00:00 /opt/google/chrome/chrome --type=utility --field-trial-handle=13557574425540539982,8732592171975764318,131072 --lang=en-US --service-sandbox-type=utility --service-request-channel-token=8ED713E2C5EA5CE8E156CCDF87DBB645 --shared-files=v8_context_snapshot_data:100,v8_natives_data:101
+root     20812     2  0 17:13 ?        00:00:00 [irq/45-mei_me]
+root     20813     2  0 17:13 ?        00:00:00 [nvidia]
+root     20814     2  0 17:13 ?        00:00:00 [irq/19-mmc0]
+root     20958  2249  0 May07 ?        00:00:00 sudo apt-get install selinux
+root     20959 20958  0 May07 ?        00:00:23 apt-get install selinux
+root     21855     1  0 17:18 ?        00:00:00 /usr/sbin/cupsd -l
+root     21857     1  0 17:18 ?        00:00:00 /usr/sbin/cups-browsed
+root     22304  1379  0 17:22 ?        00:00:00 /sbin/dhclient -d -q -sf /usr/lib/NetworkManager/nm-dhcp-helper -pf /var/run/dhclient-wlp2s0.pid -lf /var/lib/NetworkManager/dhclient-b239ba76-b502-4f6a-853a-17201700d991-wlp2s0.lease -cf /var/lib/NetworkManager/dhclient-wlp2s0.conf wlp2s0
+andre    23795 16130  7 17:43 ?        00:15:55 /opt/google/chrome/chrome --type=renderer --field-trial-handle=13557574425540539982,8732592171975764318,131072 --disable-gpu-compositing --service-pipe-token=2ADBB2FBF24284CF5F745521C6FDFFBA --lang=en-US --enable-offline-auto-reload --enable-offline-auto-reload-visible-only --num-raster-threads=2 --enable-main-frame-before-activation --enable-compositor-image-animations --service-request-channel-token=2ADBB2FBF24284CF5F745521C6FDFFBA --renderer-client-id=73 --shared-files=v8_context_snapshot_data:100,v8_natives_data:101
+root     24808 20959  0 May07 pts/2    00:00:00 /usr/bin/dpkg --status-fd 76 --configure grub-pc-bin:amd64 grub-gfxpayload-lists:amd64 grub-pc:amd64
+root     24809 24808  0 May07 pts/2    00:00:00 /usr/bin/perl -w /usr/share/debconf/frontend /var/lib/dpkg/info/grub-pc.postinst configure
+root     24819 24809  0 May07 pts/2    00:00:00 /bin/bash /var/lib/dpkg/info/grub-pc.postinst configure
+root     26701 24809  0 May07 pts/2    00:00:00 whiptail --backtitle Package configuration --title Configuring grub-pc --output-fd 11 --nocancel --separate-output --checklist GRUB install devices: 13 55 5 -- /dev/dm-0 (999152 MB; sda3_crypt)  off /dev/sda (1000204 MB; TOSHIBA_MQ01ABD100)  off - /dev/sda2 (511 MB; /boot)  off /dev/sdb (16013 MB; SanDisk_SSD_U110_16GB)  off /dev/dm-1 (990648 MB; ubuntu--vg-root)  off
+root     29165     2  0 19:06 ?        00:00:00 [kworker/u16:4]
+andre    29470  2249  0 May07 ?        00:00:00 /usr/lib/gvfs/gvfsd-recent --spawner :1.4 /org/gtk/gvfs/exec_spaw/7
+root     30378     1  0 May08 ?        00:00:05 /usr/bin/python3 /usr/sbin/aptd
+root     30993     2  0 19:35 ?        00:00:00 [kworker/u16:3]
+root     32408     2  0 19:59 ?        00:00:00 [kworker/u16:0]

@@ -1,0 +1,2627 @@
+"""This class teaches students how to manage users, groups and permissions in a Linux enviornment.
+Topics Covered
+
+Adding and Deleting Users
+Editing the passwd File Which Contains User Configurations
+Changing User Passwords
+Adding and Deleting Groups
+Adding and Deleting Users from Groups
+Editing the group Configuration File
+Understanding Permission Numbering System
+Changing User and Group Ownership for Files and Folders
+Class Notes"""
+
+
+Users
+Add User = sudo adduser [username]
+Change User password = sudo passwd [username]
+Delete User = sudo userdel [username]
+Edit Users Configuration File = sudo vim /etc/passwd (shows usernames, names of users, home directories)
+Groups
+Sudo groupadd [groupname]
+Sudo groupdel [groupname]
+Sudo vim /etc/group (shows groups and users)
+
+Permissions
+Numbers = owner/group/everyone else
+4 = read, 2 = write, 1 = execute
+
+To Chanege Permissions of a File or Folder = sudo chmod 777 file/folder (-R for recursive)
+
+Changing Ownership
+
+To Change User Ownership = sudo chown -R [username] file/folder
+To Change Group Ownership =sudo chgrp --R [groupname] file/folder
+-R for Recursive for Folders
+
+
+""" This is a resource file to refresh how to correctly use vim editor"""
+in terminal shell prompt:$ vimtutor
+
+######################################################################################
+
+HOW TO RESET/RECOVER ROOT PASSWORD (RED HAT LINUX)
+
+1. Reboot machine 
+# At GRUB bootloader
+When prompt to select OS press 'e'(for edit mode)
+
+2. Locate the kernel line and navigate to the end of the line.
+Add 'rd.break' (Ram Disk break)
+
+3. Continue with bootup by pressing ctrl+x
+
+4. mount -o remount,rw /sysroot
+chroot /sysroot
+passwd
+typed password twice
+touch /.autorelabel
+exit﻿
+
+######################################################################################
+
+HOW TO RESET/RECOVER ROOT/USER PASSWORD (Ubuntu 16.04)
+
+# This was performed and successful on my infoset-ng server (andre@suerte) 
+# IP address 10.0.0.100
+
+1. Reboot the system
+- At the GRUB menu quickly press 'e' to enter edit mode on the kernel.
+
+2. Find the line beginning with 'linux' and place cursor there, press 'end' key to jump to the end of the line. (you should see 'ro' as the last command (this stands for 'read only')
+
+TWO OPTIONS TO CONTINUE:
+
+OPTION 1: Delete everything after 'ro'(sometimes it will say splash screen....) and append the following:
+
+# this is what you should see
+root=/dev/mapper/<$HOSTNAME>--vg-root ro
+root=/dev/mapper/suerte--vg-root ro
+
+# add this:
+root=/dev/mapper/suerte--vg-root rw init=/bin/bash
+
+Press ctrl+x to continue reboot
+
+You will now be in /bin/bash as root like so:
+root@(None):/# 
+
+Here you can reset the password
+1. FOR CHANGE OF ROOT PW
+passwd root
+
+2. FOR CHANGE OF A SPECIFIC USER
+passwd <user_name> (e.g archie)
+
+You will then be prompt to enter the NEW unix PS and confirm it
+
+Type : sync 
+to apply the changes
+sync - Synchronize cached writes to persistent storage
+
+Exit by running:
+exit
+
+****************************
+OPTION 2:
+
+1. Reboot the system
+- At the GRUB menu quickly press 'e' to enter edit mode on the kernel.
+
+2. Find the line beginning with 'linux' and place cursor there, press 'end' key to jump to the end of the line. (you should see 'ro' as the last command (this stands for 'read only')
+
+# this is what you should see
+root=/dev/mapper/<$HOSTNAME>--vg-root ro
+root=/dev/mapper/suerte--vg-root ro
+
+3. Now instead of deleting anything we can just add to at the end like so:
+
+root=/dev/mapper/<$HOSTNAME>--vg-root ro init=/bin/bash
+
+4. Press ctrl+x to continue boot
+
+5. Here is where it differs from OPTION 1
+- at the moment we don't have the ability to 'write' on the file system, only 'read'(ro)
+- you can verify this by running:
+mount 
+
+Output: /dev sda1 on / type ext4 (ro,relatime,data=ordered)
+
+To write to the file system:
+mount -o remount,rw / 
+this allows us to now read and write to the file system at / (root).
+
+check that you have ability to 'rw'
+Output: /dev sda1 on / type ext4 (rw,relatime,data=ordered)
+
+Here you can reset the password
+1. FOR CHANGE OF ROOT PW
+passwd root
+
+2. FOR CHANGE OF A SPECIFIC USER
+passwd <user_name> (e.g archie)
+
+You will then be prompt to enter the NEW unix PS and confirm it
+
+Type : sync 
+to apply the changes
+sync - Synchronize cached writes to persistent storage
+
+
+
+###############################################################################################
+How can we change root password
+Here are a few ways I can think of, from the least intrusive to the most intrusive.
+
+Without Rebooting
+With sudo: if you have sudo permissions to run passwd, you can do:
+
+$ sudo passwd root
+
+Enter your password, then enter a new password for root twice. Done.
+
+Editing files: this works in the unlikely case you don't have full sudo access, but you do have access to edit /etc/{passwd,shadow}. Open /etc/shadow, either with sudoedit /etc/shadow, or with sudo $EDITOR /etc/shadow. Replace root's password field (all the random characters between the second and third colons :) with your own user's password field. Save. The local has the same password as you. Log in and change the password to something else.
+
+###############################################################################################
+
+HOW TO LIST ALL USERS ON SYSTEM WITH A HOME DIRECTORY
+
+1. Run as Root
+2. # cat /etc/passwd | grep /home*
+
+
+##############################################################################################
+
+***PRACTICE RHCSA QUESTIONS***
+
+1. Set up an account for a new System Administrator, Jason, who has just joined your team. His full name is Jason Doe, his shell is bash, he is a member of a new group called admin. His user quota at /home is 100Mb.Jason can execute any command as root but has to supply his own password at each request.
+
+
+1.Run as Root (su -)
+
+2. # create the group admin with a gid(group ID) of 601
+command: groupadd -g 601 admin
+
+3. # add the user to group 601, allow shell access in /bin/bash, add a home directory at /home/jason, -c comment full name
+
+command: useradd -g 601 -s /bin/bash -d /home/jason -c "Jason Doe" jason
+
+###########################################################################################################
+
+How to search the linux repository for a specific program name:
+# use this command to search for what you think a program is called. 
+apt-cache will return similar results to help you determine the exact name of the program you are looking for along with a short description.
+# be sure to use a (*) at the end of the program name to include 'all' files 
+when searching.
+
+	$ sudo apt-cache search <name of program*>
+	$ sudo apt-cache search Django*
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# To repeat the previous command use:
+
+	$ sudo !!
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# To switch users use:
+
+	$ su <name of user>
+	$ su carolina
+	$ su andre
+
+# To change to Root user use:
+
+	# 'Super user do, super user'.
+	$ sudo su
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# To manage packages/install, remove, update, and upgrade  use the 'apt-get' program
+# command usage: sudo apt-get <action> <file or program you want action performed on>
+# example:
+	$ sudo apt-get install <name of program(package)>
+	$ sudo apt-get install bluefish
+
+# To remove a program use:
+	$ sudo apt-get remove <name of program(package)>
+	$ sudo apt-get remove bluefish
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# To make a 'matrix' style effect on command line use this:
+
+	$ while (true) do echo -n "your message"; done
+
+# To kill task: ctrl z
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# To check if a program or specific package is install on your local machine use:
+
+	$ apt-cache policy <name of program>
+	$ apt-cache policy python3
+	output:
+		python3:
+			Installed: 3.5.1-3
+			Candidate: 3.5.1-3
+		Version table:
+			*** 3.5.1-3 500
+			500 http://us.archive.ubuntu.com/ubuntu xenial/main amd64 Packages
+			100 /var/lib/dpkg/status
+
+# This will tell you if it exists on the machine and where it is installed.
+
+# To check a known non-exsistant program output look like the following:
+	$ apt-cache policy bluefish
+	output:
+		bluefish:
+		  Installed: (none)
+		  Candidate: 2.2.7-2
+		Version table:
+		2.2.7-2 500
+		500 http://us.archive.ubuntu.com/ubuntu xenial/universe amd64 Packages
+
+# Installed = NONE
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# FILE PERMISSIONS AND FILE OWNERSHIP
+--------------------------------------
+
+USE:  
+	$ ls -l (list with 'long view) 
+to show files with permissions and user/groups
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+drwxrwxr-x 2 andre andre  4096 Jun 17 17:44 Command_Line_Notes
+
+In the order of output:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-rwxrw-r--    1    root   root 2048    Jan 13 07:11 afile.exe
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-file permissions (drwxrwxr)
+number of links (1)
+owner name (root)
+owner group (root)
+file size (2048)
+time of last modification, and
+file/directory name (Jan 13 07:11 <name of file/directory>
+
+File permissions is displayed as following:
+
+first character is - or l or d
+d-  indicates a directory.
+a line(hyphen) represents a file.
+l-  is a symlink (or soft link) - special type of file.
+
+three sets of characters, three times, indicating permissions for owner, group and other:
+r = readable
+w = writable
+x = executable
+
+In the example out put above -rwxrw-r--, this means the line displayed is:
+
+a regular file (displayed as -)
+readable, writable and executable by owner (rwx)
+readable, writable, but not executable by group (rw-)
+readable but not writable or executable by other (r--)
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+# chown = 'Change ownership' - change to a specific user or 'Root'
+command:
+	$ chown user:group <name of file/directory> (can also specify a direct path (usr/env<name of file>)
+
+# chmod = 'Change permissions' - allowing what can and can not be done to a specific file or directory.
+
+NOTE**** You can add -R to both chown, and chmod to make the command recursive to all files in a directory.
+
+EXAMPLE:
+	chown -R user:group <name of directory>
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Command syntax[edit]
+
+	$ chmod [options] mode[,mode] file1 [file2 ...][3]
+
+Usual implemented options include:
+
+-R recursive, i.e. include objects in subdirectories
+-f force, forge ahead with all objects even if errors occur
+-v verbose, show objects processed
+If a symbolic link is specified, the target object is affected. File modes directly associated with symbolic links themselves are typically never used.
+
+To view the file mode, the ls or stat commands may be used:
+
+$ ls -l findPhoneNumbers.sh
+
+-rwxr-xr--  1 dgerman  staff  823 Dec 16 15:03 findPhoneNumbers.sh
+$ stat -c %a findPhoneNumbers.sh
+
+754
+
+The r, w, and x specify the read, write, and execute access, respectively. The first character of the ls display denotes the object type;
+a hyphen represents a plain file. This script can be read, written to, and executed by the owner, read and executed by other members of the staff group and can also be read by others.
+
+Octal modes[edit]
+See also: Octal notation of file system permissions
+
+The chmod numerical format accepts up to four octal digits. 
+The three rightmost digits refer to permissions for the file owner, the group, and other users.
+The optional leading digit, when 4 digits are given, specifies the special setuid, setgid, and sticky flags.
+
+Numerical permissions
+
+#	Permission	rwx
+7	read, write and execute	rwx
+6	read and write	rw-
+5	read and execute	r-x
+4	read only	r--
+3	write and execute	-wx
+2	write only	-w-
+1	execute only	--x
+0	none	---
+Numeric example[edit]
+In order to permit all users who are members of the programmers group to update a file
+
+	$ ls -l sharedFile
+
+-rw-r--r--  1 jsmith programmers 57 Jul  3 10:13  sharedFile
+	$ chmod 664 sharedFile
+	$ ls -l sharedFile
+
+-rw-rw-r--  1 jsmith programmers 57 Jul  3 10:13  sharedFile
+Since the setuid, setgid and sticky bits are not specified, this is equivalent to:
+
+	$ chmod 0664 sharedFile
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Creating New files, directories. Removing and deleting files/directories
+
+Commands:
+
+	$ touch - creates files
+EXAMPLE:
+	$ touch <nameoffile.extension_type>
+
+	$ touch file.txt file2.txt file3.txt file.py file4.cpp file5.html file6.html
+** This creates 6 new files
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+mkdir(make directory)- creates a new empty directory
+
+cp(copy)- how to copy files to a new location
+
+	$ cp <name of target file> <specific directory path>
+	$ cp pythonNotes /Documents/tutorials/python
+
+** WHEN INSIDE OF SPECIFIC DIRECTORY**
+rm(remove)- removes files and directories
+	$ rm file.txt
+
+To remove all files from a directory but keep the directory use:
+	$ rm ./*
+
+To remove all files with a specific file extension use:
+	$ rm ./*.<extension_type>
+	$ rm ./*.html
+
+** WHEN NOT IN SPECIFIC DIRECTORY **
+
+To remove all file from a directory but keep the directory use:
+	$ rm <nameofdirectory>/*
+	$ rm Documents/*
+
+To remove the directory use:
+	$ rm -rf <nameofdirectory>
+	$ rm -rf schoolnotes
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# To move a file use:
+	$ mv filename <destination>
+	$ mv file1.txt /Documents/newdir
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FIND COMMAND***
+~~~~~~~~~~~~~~~~~
+
+# use this to find specific files, file extensions, file sizes, as well as specific directories.
+
+Command:
+	$ find . -type f -iname "*.html"
+	
+	# you can also specify a specific directory in the search like so
+	# This command reads as: 
+		find in the /etc directory all file types, ignore case and return all with a .conf extension.
+	$ find /etc -type f -iname "*.conf"
+
+
+
+$ find . -type f -iname "*.html"
+
+find = command
+. = in the current directory
+-type f = the type we are searching for is 'f' for file.
+-iname = means to ignore case (upper/lower) this will return all
+"" = name of specific file or name of specific extension type
+* = wild card for searching for ALL
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GREP Command***
+~~~~~~~~~~~~~~~~~
+
+# Use grep to find specific items within a file
+
+Command:
+	$ grep <"what you are looking for> <name of file to look in>
+	$ grep "function" file1.py
+
+# Search all files within current directory, ignoring case(case insensitive)
+	$ grep -i "function" ./*
+
+
+***USE THIS COMMAND TO SEARCH FOR MOST INSTANCES WITHIN A FILE****
+# Search and return with line number where instances of the search string are found.
+	$ grep -i -n "config" ./*
+
+
+# *** YOU CAN ALSO USE GREP IN CONJUNCTION WITH THE 'FIND' COMMAND***
+
+	# you can run a find command as normal and at the end of the command add the flag -exec(execute)
+	# -exec takes the grep command argument
+	# at the end of your grep command you need to end the statement with {} +
+
+
+	# this will search and find and return...
+	$ find . -type f -iname "*.php" -exec grep -i -n "config" {} +
+
+		-find in the current directory
+		-all file types
+		-ignoring case(case insensitive)
+		-search all with .php extentions
+		THEN
+		- Execute grep
+		- ignoring case
+		- show line numbers
+		- return 'config' as search
+		- {} + end the execute statement
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Redirect the output of a command to a file by printing and creating a file to add output in.
+	- you do this by running the command on the output source
+	Example:
+		$ find . -type f -size -20k -iname "*.py" -exec grep -i -n "config" {} + | tee drelog.txt
+
+	# This searches the current directory looking for files less than 20 kilobytes with the .py extention. 
+	# Then executes grep case insensitive, displaying line numbers searching for string 'config' 
+	# Then it pipes the result into a file named 'drelog.txt' as well as prints the output to the screen.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# PROCESSES
+
+# Use 'top' or 'htop' to view in real-time current processes.
+
+# To view all background tasks use the command:
+	$ ps aux
+
+# To view a specific app or program use ps aux and pipe the app or program as the argument.
+	$ ps aux | python3
+
+# To view processor ID's (PID) use the command pgrep.
+	$ pgrep chrome
+
+# To kill a single app or process use grep to return the proccessor id and then kill it based on it's id.
+	$ pgrep chrome
+		output:
+		1568
+		3369
+		1497
+		7812
+	# To kill a specific process use this command.
+		$ kill -9 1497
+
+# Likewise to kill all of the proccesses use:
+	$ killall chrome
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Why you don't have a root password
+
+While you can create a password for the superuser account allowing you to log in as root with su, it's worth mentioning that this isn't the "Ubuntu" way of doing things. Ubuntu have specifically chosen not to give a root login and password by default for a reason. Instead, a default Ubuntu install will use sudo.
+
+Sudo is an alternative to giving people a root password in order to perform superuser duties. In a default Ubuntu install the person who installed the OS is given "sudo" permission by default.
+
+Anybody with "sudo" permission may perform something "as a superuser" by pre-pending sudo to their command. For instance, to run apt-get dist-upgrade as a superuser, you could use:
+
+sudo apt-get dist-upgrade
+You will see this usage of sudo pretty much anywhere you read a tutorial about Ubuntu on the web. It's an alternative to doing this.
+
+su
+apt-get dist-upgrade
+exit
+
+With sudo, you choose in advance which users have sudo access. There is no need for them to remember a root password, as they use their own password. If you have multiple users, you can revoke one's superuser access just by removing their sudo permission, without needing to change the root password and notify everyone of a new password. You can even choose which commands a user is allowed to perform using sudo and which commands are forbidden for that user. And lastly, if there is a security breach it can in some cases leave a better audit trail showing which user account was compromised.
+
+Sudo makes it easier to perform a single command with superuser privileges. With su, you permanently drop to a superuser shell which must be exited using exit or logout. This can lead to people staying in the superuser shell for longer than necessary just because it's more convenient than logging out and in again later.
+
+With sudo, you still have the option of opening a permanent (interactive) superuser shell with the command:
+
+sudo su
+... and this can still be done without any root password, because sudo gives superuser privileges to the su command.
+
+And similarly, instead of su - for a login shell you can use sudo su - or even sudo -i.
+
+However when doing so you just need to be aware that you are acting as a superuser for every command. It's a good security principle not to stay as a superuser for longer than necessary, just to lessen the possibility of accidentally causing some damage to the system (without it, you can only damage files your user owns).
+
+Just to clarify, you can, if you choose, give the root user a password allowing logins as root as described in @Oli's answer, if you specifically want to do things this way instead. I just wanted to let you know about the Ubuntu convention of preferring sudo instead and let you know that there is an alternative.
+
+###########################################################################################
+
+# check this file when dealing with SELinux
+# all messages will be logged here
+-rw-r----- 1 syslog adm 904 May  7 19:17 /var/log/auth.log
+#########################################################################################
+# Some useful commands for providing 'help' within the terminal environment.
+1. Use man-pages of (man <command> -- these pages give a great over-view of the command and any additional arguments.
+2. Use '--help' (E.g cp --help)-- This provides a quick reference of how a command should be structured. Args within [](square brackets) are optional. Args that are NOT in [] are required.
+3. Use 'info' (info <command>) -- Much like the man pages, these provide info in addition to the 'man-pages'.
+4. If you know of a command but can't rememeber the exact name, you can search the system. You do this by using the 'apropos' command (E.g apropos cp).
+
+##############################################################################
+
+Gzip and bzip2 are functionally equivalent. (There once was a bzip, but it seems to have completely vanished off the face of the world.) Other common compression formats are zip, rar and 7z; these three do both compression and archiving (packing multiple files into one). Here are some typical ratings in terms of speed, availability and typical compression ratio (note that these ratings are somewhat subjective, don't take them as gospel):
+
+decompression speed (fast > slow): gzip, zip > 7z > rar > bzip2
+compression speed (fast > slow): gzip, zip > bzip2 > 7z > rar
+compression ratio (better > worse): 7z > rar, bzip2 > gzip > zip
+availability (unix): gzip > bzip2 > zip > 7z > rar
+availability (windows): zip > rar > 7z > gzip, bzip2
+As you can see, there isn't a clear winner. If you want to rely on programs that are likely to be installed already, use zip on Windows (or if possible, self-extracting archives, as Windows doesn't ship with any of these) and gzip on unix. If you want maximum compression, use 7z.
+
+Rar also has downside that, as far as I know, there is no free software that creates rar archives or that can unpack all rar archives. The other formats have free implementations and no (serious) patent claims.
+
+########################################################################################
+
+# Archiving a directory to a file using tar
+
+tar -czvf [destination_name].tar.gz or .tgz(also common) [original dir]
+***NOTE: arg 'f' MUST be the LAST ARGUMENT otherwise you will receive an error*****
+
+E.g: tar -czvf jupyternotebookbackup.tar.gz jupyternotebook/
+# now ls or ll the .tar.gz file and notice the file size... rather large and not practical for email or sending. In this case we need to compress the file using gzip.
+
+command: gzip [*.tar.gz file]
+
+# In order to view the contents of the tar file run:
+tar -tf [*.tar.gz]
+
+How to unzip .tgz file using the terminal
+To extract a .tgz file with tar you need to use,
+
+tar -xvzf /path/to/yourfile.tgz
+where,
+
+x for extract
+v for verbose
+z for gnuzip
+f for file, should come at last just before file name.
+
+#########################################################################################
+RHCSA Flash Cards  #
+********************
+
+$ vncpasswd
+
+This will prompt you to create a strong password that you will need to remember for connecting to your linux academy lab 
+server via a VNC Client Application.
+Before proceeding reboot your linux server.
+After a few minutes you can ssh back to your server.
+
+############################################################################################
+
+What does this do?
+
+cat [file] > [newfile].txt 
+
+This is output redirection into a new file. This creates the file if it does not exist and writes the output to the file. *NOTE: If the file already exists then this will overwrite the file.
+
+#############################################################################################
+
+What does this command do?
+
+$ ps aux >> processfile.txt
+
+This creates process.txt if it doesn't exist and/or appends the output of ps aux into the file process.txt
+
+##########################################################################################
+
+Man Page for ls command
+
+ls [OPTION]... [FILE]...
+
+Explain the syntax
+
+
+Anything within square brakets [..] is optional
+the  .... means that the command accepts multiple options and multiple files
+
+#########################################################################################
+
+
+How do you redirect a STDERR output to a log file?
+
+you do this by using the 2> (2 and a greater than sign)
+
+$ [some_bad_command] 2> logfile.txt
+
+again this creates the file if it doesn't exist.  However,  if the file does exist then you will need to use:
+ $ [some_bad_command] 2>> logfile.txt
+ to append the stderr output.
+
+##########################################################################################
+
+Hit Ctrl 'r' to issue a history of previous commands.
+
+#########################################################################################
+
+FILE TRANSFER THROUGH SSH USING 1. SCP or 2.SFTP
+(Please read the man pages for these)
+
+Both scp and sftp use the ssh port 22 because it is encrypted this is the safe way of file 
+transfering. NOTE!!! 'Telnet' is unsecure and should be avoided if possible.
+
+
+# scp [file...file...file] username@ip_address(:and specify where to put the files)
+# (eg below.. transfering test1-4 into CentOS remote server and placing the files into the 
+user's home directory.
+
+$ scp test1 test2 test3 test4 user@52.90.15.86:~/
+
+SFTP:
+
+$ sftp username@ip_address
+
+Once logged into remote server you are able to run most linux commands.
+
+# transfers file from the REMOTE SERVER --> LOCAL HOST
+# think... put file on LOCAL HOST
+$ put file_name
+
+# transfers file from the LOCAL HOST --> REMOTE SERVER
+# think... get file from LOCAL HOST
+$ get file_name
+
+TO EXIT SFTP:
+type: 'bye, exit or quit'
+
+
+
+
+####################################################################################
+
+RESTART SSH SERVICE
+
+sudo /etc/init.d/ssh restart
+
+
+
+# Using globs in Linux Red Hat
+
+ls nameOfTheFile* - 
+ls ?nameOfTheFile
+ls [nam]meOfTheFile
+ls [!te]meOfTheFile --> Negates(excludes) characters after '!' Can also be '^'(e.g [^na]meOfTheFile)
+ls [0-10][0-10]NameOfTheFile
+
+
+****COMMANDS TO KNOW****
+
+$ service --status-all  
+
+runs all init scripts, in alphabetical order, with the status command.   The  status
+is  [ + ] for running services, [ - ] for stopped services and [ ? ] for services without a 'status' 
+command. This option only calls status for sysvinit jobs; upstart jobs can be queried in a  similar  manner
+with initctl list.
+
+
+$ initctl list
+
+allows a system administrator to communicate and interact with the Upstart init(8) daemon.
+
+$ dmesg
+
+is used to examine or control the kernel ring buffer.
+
+The default action is to display all messages from the kernel ring buffer.
+
+$ host
+
+is a simple utility for performing DNS lookups. It is normally used
+to convert names to IP addresses and vice versa. When no arguments or
+options are given, host prints a short summary of its command line
+arguments and options.
+
+
+$ dig
+
+(domain information groper) is a flexible tool for interrogating DNS
+name servers. It performs DNS lookups and displays the answers that are
+returned from the name server(s) that were queried. Most DNS
+administrators use dig to troubleshoot DNS problems because of its
+flexibility, ease of use and clarity of output. Other lookup tools tend to
+have less functionality than dig.
+
+$ systemctl
+
+may be used to introspect and control the state of the "systemd"
+system and service manager. Please refer to systemd(1) for an introduction
+into the basic concepts and functionality this tool manages.
+
+# to start a service run:
+$ sytemctl start [service_name]
+
+$ systemd 
+
+systemd is a system and service manager for Linux operating systems. When
+run as first process on boot (as PID 1), it acts as init system that
+brings up and maintains userspace services.
+For compatibility with SysV, if systemd is called as init and a PID that
+is not 1, it will execute telinit and pass all command line arguments
+unmodified. That means init and telinit are mostly equivalent when invoked
+from normal login sessions. See telinit(8) for more information.
+
+When run as a system instance, systemd interprets the configuration file
+system.conf and the files in system.conf.d directories; when run as a user
+instance, systemd interprets the configuration file user.conf and the
+files in user.conf.d directories. See systemd-system.conf(5) for more
+information.
+
+###########################################################################################################################################
+
+$ pgrep  
+
+pgrep  looks  through the currently running processes and lists the process IDs which match the selection
+criteria to stdout.  All the criteria have to match.  For example,
+
+$ pgrep -u root sshd
+
+ will only list the processes called sshd AND owned by root.  On the other hand,
+
+$ pgrep -u root,daemon
+
+will list the processes owned by root OR daemon.
+
+pkill will send the specified signal (by default SIGTERM) to each process instead of listing them on std‐
+ # This will look through the current running processes and search for 'httpd' pass the -l flag to list the name
+$ pgrep httpd -l
+
+# search all processes NOT owned by the root user. -v in this case returns the inverse. This is an inverse relationship.
+$ pgrep -v -u root -l
+
+
+Pkill
+
+ pkill will send the specified signal (by default SIGTERM) to each process instead of listing them on std‐ out.
+
+
+# to kill all processes on a particular service run:
+																		$ pkill [name_of_service] (e.g httpd) -- This will kill any services associated with httpd, rather than using kill [PID #]
+
+
+																		# (below) running kill -l will list out all of the different process kill options
+																		# by default pkill if run with no args will default to 15(SIGTERM)-- this will kill the process cleanly and correctly allowing the process to finish tasks before closing.
+																		# NOTE if we encounter a process that is hung/frozen or a prossible malious attack use 9(SIGKILL) to immediately terminate the process.
+
+																		[root@centos andre]# kill -l
+																		 1) SIGHUP	 2) SIGINT	 3) SIGQUIT	 4) SIGILL	 5) SIGTRAP
+																		  6) SIGABRT	 7) SIGBUS	 8) SIGFPE	 9) SIGKILL	10) SIGUSR1
+																		  11) SIGSEGV	12) SIGUSR2	13) SIGPIPE	14) SIGALRM	15) SIGTERM
+																		  16) SIGSTKFLT	17) SIGCHLD	18) SIGCONT	19) SIGSTOP	20) SIGTSTP
+																		  21) SIGTTIN	22) SIGTTOU	23) SIGURG	24) SIGXCPU	25) SIGXFSZ
+																		  26) SIGVTALRM	27) SIGPROF	28) SIGWINCH	29) SIGIO	30) SIGPWR
+																		  31) SIGSYS	34) SIGRTMIN	35) SIGRTMIN+1	36) SIGRTMIN+2	37) SIGRTMIN+3
+																		  38) SIGRTMIN+4	39) SIGRTMIN+5	40) SIGRTMIN+6	41) SIGRTMIN+7	42) SIGRTMIN+8
+																		  43) SIGRTMIN+9	44) SIGRTMIN+10	45) SIGRTMIN+11	46) SIGRTMIN+12	47) SIGRTMIN+13
+																		  48) SIGRTMIN+14	49) SIGRTMIN+15	50) SIGRTMAX-14	51) SIGRTMAX-13	52) SIGRTMAX-12
+																		  53) SIGRTMAX-11	54) SIGRTMAX-10	55) SIGRTMAX-9	56) SIGRTMAX-8	57) SIGRTMAX-7
+																		  58) SIGRTMAX-6	59) SIGRTMAX-5	60) SIGRTMAX-4	61) SIGRTMAX-3	62) SIGRTMAX-2
+																		  63) SIGRTMAX-1	64) SIGRTMAX
+
+																		  STUDY THESE******
+
+																		  1) SIGHUP-- 'Signal Hang-up': This hangs up the connection to the process, similar to clicking the 'x' in a window to close the process
+																		  2) SIGINT--'Signal Interrupt' : This is equalvent to the keyboard input of 'ctrl+c' this kills the process by interruption.
+
+3) SIGQUIT--'Signal Quit': Sends a signal to process causing it to quit. This allows the process to finish any closing tasks if needed.
+
+15) SIGTERM--'Signal Terminate': (Pkill default) this will kill the process cleanly and correctly allowing the process to finish tasks before closing.
+
+18) SIGCONT--'Signal Continue': Will stop a process and then restart it automatically
+
+19) SIGSTOP--'Signal Stop': This forces a STOP to the process and allows the user to restart if needed.
+
+20) SIGTSTP-- Sends a signal to a process that can be stopped but does not forcefully do it.
+
+
+########################################################################################################################################
+
+***HOW TO CLEANLY BOOT ANOTHER USER OFF THE SYSTEM***
+
+AS ROOT: To view all user accounts on system run:
+
+
+# in /etc/passwd file cut everything in the first column at the delimeter ':'
+$ cut -d: -f1 /etc/passwd
+
+# In order for this to work have a admin user on a physical machine as root. Add another user to the system with their own unique password
+
+$ useradd archie
+$ passwd archie
+create password
+
+On the root account, ssh into <user>@<server_ip> (e.g ssh archie@10.0.0.5)
+
+Now, as archie sign-in and open vim. This will create the process when we look at the account using:
+
+
+w - Show who is logged on and what they are doing.
+
+SYNOPSIS
+       w [options] user [...]
+
+DESCRIPTION
+       w  displays information about the users currently on the machine, and their processes.  The header shows,
+       in this order, the current time, how long the system has been  running,  how  many  users  are  currently
+       logged on, and the system load averages for the past 1, 5, and 15 minutes.
+
+       The following entries are displayed for each user: login name, the tty name, the remote host, login time,
+       idle time, JCPU, PCPU, and the command line of their current process.
+
+       The JCPU time is the time used by all processes attached to the tty.  It does not include past background
+       jobs, but does include currently running background jobs.
+
+       The PCPU time is the time used by the current process, named in the "what" field.
+
+TO KILL A PROCESS ON ANOTHER USER
+
+$ pkill -t <terminal_window_id> (pts/*) -- find the particular user's tty and pkill it
+
+Now, this will kill whatever application or process they are using instantly, however this will NOT log the user out.
+
+***In order to completely and cleanly boot the user use the following:***
+
+# first check on their processes and list them.
+
+$ pgrep -u <user_name> -l (e.g pgrep -u frank -l)
+
+
+# if the user is remoted into the server through ssh, simply kill sshd and this will kill the connection
+# Remember to specify -u or else this will kill all sshd processes including any you as the ADMIN are using.
+
+$ pkill -u <user_name> sshd
+
+#####################################################################################################################################
+
+Here we are going to create a while loop that will print a string of text("My Program") continuously every 1 second and send to a file called output.file in the home directory. The '&' at the end sends this process into a background task.
+
+--To view background tasks run:
+$ jobs
+
+(while true; do echo -n "My Program" >> ~/output.file; sleep 1; done) &
+
+EXAMPLE WITH BACKGROUND RUNNING TASK: 
+
+[andre@centos ~]$ (while true; do echo -n "My Program" >> ~/output.file; sleep 1; done) &
+[1] 31266
+[andre@centos ~]$ jobs
+[1]+  Running                 ( while true; do
+    echo -n "My Program" >> ~/output.file; sleep 1;
+done ) &
+
+
+STOPPING THE PROCESS:
+
+# Notice that the job id = [1]+, in order to pass the job id to -sigstop you must pass %(job_id_#) in this case 1 because there is only one job running.
+
+[andre@centos ~]$ kill -sigstop %1
+
+[1]+  Stopped                 ( while true; do
+    echo -n "My Program" >> ~/output.file; sleep 1;
+done )
+
+
+STARTING A STOPPED PROCESS: Use -sigcont
+
+[andre@centos ~]$ kill -sigcont %1
+[andre@centos ~]$ jobs
+[1]+  Running                 ( while true; do
+    echo -n "My Program" >> ~/output.file; sleep 1;
+done ) &
+
+ #####################################################################################################################################
+
+Nice priority: (Range = negative 20 to positive 19)
+
+-20 = Highest priority
+19 = Lowest priority
+
+Any user can make a task lower priority
+Only Root can make a task higher priority
+
+EXAMPLES OF CHANGING PRIORITY:
+
+
+# List all processor tasks, filter by pid(processor id), comm(command), and nice(nice level/priority) search for httpd
+# as you see all the httpd tasks have a TOP priority of 0(zero).
+
+[andre@centos ~]$ ps axo pid,comm,nice | grep httpd
+
+ 2007 httpd             0
+ 2009 httpd             0
+ 2010 httpd             0
+ 2011 httpd             0
+ 2012 httpd             0
+ 2013 httpd             0
+
+# to change the nice level:
+
+# this will change the level to priority 10.
+$ nice -n 10 httpd
+
+HOW TO CHANGE THE PRIORITY LEVEL ON A RUNNING SERVICE WITHOUT STOPPING IT?
+FOR EXAMPLE A WEB SERVER...STOPPING IT WOULD BOOT ALL USERS LOGGED IN...THIS WOULD BE BAD.
+
+# to change for a single process use:
+$ renice -n [new_level] [pid] ---> renice -n 10 2011
+
+
+HOW TO CHANGE NICE LEVEL RECURRSIVLY FOR ALL HTTPD PROCESSES.
+-- In this case we need to use what's called a 'sub shell' this is identified by $()
+
+# to change the level for all httpd processes
+
+$ renice -n [new_level] $(pgrep [service_name/process]) ------> E.g $ renice -n 10 $(pgrep httpd)
+
+So what is happening? The sub-shell is run first giving us all of our httpd processes. That output is then passed to renice which makes the change.
+
+###############################################################################################################################
+
+renice +4 $(pgrep firefox)
+Make all firefox processes run nicer by a value of 4. This command illustrates the way pgrep's output can be passed to other utilities as input. In this case, the command pgrep firefox is passed as an argument to renice because it is enclosed in $( ).
+
+#################################################################################################################################
+
+View the current nice of the httpd service using the ps command and grep command together.
+
+[root@localhost]# ps axo pid,comm,nice | grep httpd 
+or 
+[root@localhost]# ps axo pid,comm,nice --sort=-nice | grep httpd 
+This allows you to sort by nice level.
+
+
+[root@centos andre]# ps axo pid,comm,nice | grep httpd
+
+ 2007 httpd             0
+ 2009 httpd             0
+ 2010 httpd             0
+ 2011 httpd             0
+ 2012 httpd             0
+ 2013 httpd             0
+
+[root@centos andre]# renice -n 14 $(pgrep httpd)
+
+2007 (process ID) old priority 0, new priority 14
+2009 (process ID) old priority 0, new priority 14
+2010 (process ID) old priority 0, new priority 14
+2011 (process ID) old priority 0, new priority 14
+2012 (process ID) old priority 0, new priority 14
+2013 (process ID) old priority 0, new priority 14
+
+[root@centos andre]# ps axo pid,comm,nice | grep httpd
+
+ 2007 httpd            14
+ 2009 httpd            14
+ 2010 httpd            14
+ 2011 httpd            14
+ 2012 httpd            14
+ 2013 httpd            14
+
+#####################################################################################################################################
+
+TO SEE HOW LONG A TASK TAKES TO EXECUTE RUN TIME PRIOR TO THE COMMAND
+
+# to see how long a tar archive takes run:
+
+$ time tar -czvf macbook2.tar.gz macbook2/
+
+real	0m1.692s
+user	0m1.636s
+sys	0m0.069s
+
+
+######################################################################################################################################
+
+WORKING WITH TOP
+
+On a LinuxAcademy.com lab server start the top program.
+
+[root@localhost]# top
+2. The top program shows all running processes on the system but sorts them. Using your keyboard, browse up and down to view the processes.
+
+Use the keyboard up and down arrows to navigate
+
+3. Sort all processes by memory percentage.
+
+Press "Shift" + "M"
+
+4. Sort all processes by CPU usage.
+
+Press "Shift" + "P"
+
+5. Renice the process for the script started at the beginning of the exercise. The command is  "bash", as displayed in the top program. Set the nice level to -20.
+
+Press the "R" key, enter the process id of the process you want to renice, and set the nice level.
+
+6. Kill the bash script using top.
+
+Press the "K" key and enter the process ID of the process you wish ti kill, then press enter.
+
+##################################################################################################################################
+
+GET CPU INFO 
+
+$ cat /proc/cpuinfo
+
+The proc file system is a pseudo-file system which is used as an interface to kernel data structures.  It
+is commonly mounted at /proc.  Most of it is read-only, but some  files  allow  kernel  variables  to  be
+changed.
+
+
+# get the number of processors specific to the machine
+
+$ cat /proc/cpuinfo | grep "model name" | wc -l
+
+View the system uptime and load average.
+
+[root@localhost ~]# uptime
+ 09:53:07 up 16:32,  3 users,  load average: 1.02, 1.00, 0.69
+2. View the system uptime and load average in such a way that it also shows what users are logged in to the system and what the user is doing.
+
+[root@localhost ~]# w
+ 09:53:37 up 16:33,  3 users,  load average: 1.01, 1.00, 0.70
+USER     TTY        LOGIN@   IDLE   JCPU   PCPU WHAT
+user  pts/1     09:18    1.00s  0.10s  5.32s /usr/libexec/gnome-terminal-server
+3. Using the proc file system and wc, display the number of processors your system has. This is important to calculate the load average of the system.
+
+[root@localhost]# grep "model name" /proc/cpuinfo | wc -l
+4. Calculate the 1, 5, and 15 minute CPU load averages for the system.
+
+There are two processes as a result of our previous command.
+
+[root@localhost ~]# grep "model name" /proc/cpuinfo | wc -l
+2
+For each, processor 1 is 100%. If you have 1 processor and your load average is 1.2 then your load is greater than 100%. If you have 2 processors and your load is 2 then your load is 100%.
+
+[root@localhost ~]# uptime
+ 09:42:20 up 16:21,  3 users,  load average: 1.04, 0.72, 0.35
+Per CPU load average calculation formula: load average / # of cpu
+Per CPU load average calculation 1 Minute load average: 1.04 / 2 = 52%
+Per CPU load average calculation 5 Minute load average: .72 / 2 = 36%
+Per CPU load average calculation 15 Minute load average: .35 / 2 = 17.5%
+
+####################################################################################################################################
+
+Locate and Interpret System Log Files and Journals
+
+# to see a particular process status run:
+$ systemctl status <process_name> (e.g systemctl stauts httpd)
+
+# to view a system configuration file with journalctl
+
+$ journalctl _SYSTEM_UNIT=[configuration_file]
+
+----> # To view the different types of configuration files
+	located in /usr/lib/systemd -------> OR $ systemctl -t help
+
+[root@centos ~]# systemctl -t help
+Available unit types:
+service
+socket
+busname
+target
+snapshot
+device
+mount
+automount
+swap
+timer
+path
+slice
+scope
+
+
+# see user's ssh into system in real time
+$ tail -f secure
+
+# man systemd-journald
+
+  systemd-journald is a system service that collects and stores logging data. It creates and maintains
+       structured, indexed journals based on logging information that is received from a variety of sources:
+
+       ·   Kernel log messages, via kmsg
+
+       ·   Simple system log messages, via the libc syslog(3) call
+
+       ·   Structured system log messages via the native Journal API, see sd_journal_print(4)
+
+       ·   Standard output and standard error of system services
+
+       ·   Audit records, via the audit subsystem
+
+       The daemon will implicitly collect numerous metadata fields for each log messages in a secure and
+       unfakeable way. See systemd.journal-fields(7) for more information about the collected metadata.
+
+       Log data collected by the journal is primarily text-based but can also include binary data where
+       necessary. All objects stored in the journal can be up to 2^64-1 bytes in size.
+
+       By default, the journal stores log data in /run/log/journal/. Since /run/ is volatile, log data is lost
+       at reboot. To make the data persistent, it is sufficient to create /var/log/journal/ where
+       systemd-journald will then store the data.
+
+       systemd-journald will forward all received log messages to the AF_UNIX/SOCK_DGRAM socket
+       /run/systemd/journal/syslog, if it exists, which may be used by Unix syslog daemons to process the data
+       further.
+
+       See journald.conf(5) for information about the configuration of this service.
+
+***The directory /run/log is essentially a temp file system unique to each boot up***
+
+# to see the journal run:
+$ journalctl
+##################################################################################################################
+
+INFORMATION ON THE BOOT PROCESS****
+
+[root@centos ~]# systemd-analyze
+Startup finished in 1.117s (kernel) + 2.181s (initrd) + 20.335s (userspace) = 23.635s
+
+# To trouble shoot and see a particular configuration file during boot-up use:
+
+[root@centos ~]# systemd-analyze blame
+
+          5.361s NetworkManager-wait-online.service
+          4.798s lvm2-monitor.service
+          4.332s systemd-udev-settle.service
+          4.104s dev-mapper-centos\x2droot.device
+          2.464s lvm2-pvscan@8:3.service
+          2.183s kdump.service
+          1.424s systemd-udevd.service
+          1.034s proc-fs-nfsd.mount
+           947ms home.mount
+           816ms systemd-tmpfiles-setup-dev.service
+           810ms postfix.service
+           696ms firewalld.service
+           660ms NetworkManager.service
+           573ms microcode.service
+           455ms rhel-dmesg.service
+           451ms systemd-journal-flush.service
+           407ms rhel-readonly.service
+           373ms gssproxy.service
+           344ms systemd-sysctl.service
+           307ms boot.mount
+           305ms auditd.service
+           291ms dmraid-activation.service
+           283ms sys-kernel-debug.mount
+           275ms network.service
+           267ms libvirtd.service
+           266ms systemd-tmpfiles-setup.service
+           258ms systemd-random-seed.service
+           218ms dev-mapper-centos\x2dswap.swap
+           215ms polkit.service
+           207ms plymouth-quit-wait.service
+           207ms plymouth-quit.service
+           200ms ModemManager.service
+           193ms tuned.service
+           188ms abrt-ccpp.service
+           180ms mcelog.service
+           176ms boot-efi.mount
+           175ms dev-hugepages.mount
+           174ms dev-mqueue.mount
+           171ms rhel-import-state.service
+           170ms nfs-config.service
+           166ms systemd-remount-fs.service
+           166ms rsyslog.service
+           153ms sysstat.service
+
+
+# Disabling systemctl services, disables the service from starting when reached in the appropriate target has been reached.
+
+[root@centos ~]# systemctl disable httpd
+[root@centos ~]# systemctl status httpd
+● httpd.service - The Apache HTTP Server
+   Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; vendor preset: disabled)
+   Active: inactive (dead)
+     Docs: man:httpd(8)
+           man:apachectl(8)
+
+##############################################################################################################################
+
+How can you list the active state of all loaded service unit configuration files?
+
+systemctl list-unit-files --type=service
+
+
+Where are the configuration files for systemd located?
+1./etc/systemd/system
+2./usr/lib/systemd/system
+
+How do you view the disabled/enabled settings of all units with the type "service"?
+
+systemctl list-unit-files --type=service
+
+Which man page shows information about unit configuration files and their locations?
+$ systemd.unit
+
+Which command displays all available kill signals?
+$ kill -l
+
+-20 is the most favorable for a given process.
+True
+
+Which command(s) would list all service unit configuration files regardless of whether they are active or not?
+$ systemctl --type=service --all
+
+How can you list all failed service unit configuration files?
+$ systemctl --failed --type=service
+
+What line in the bootloader entry do you need to edit after interrupting the boot process to change the current boot target?
+linux16
+
+Which "niceness" is the least favorable for a process?
+-19
+
+Systemctl halt shuts down and halts the system.
+True
+
+
+Only a privileged user can run a process with lower niceness.
+True
+
+Which command(s) display available systemd unit types?
+$ systemctl -t help
+
+How can you list the active state of all loaded service unit configuration files?
+$ systemctl list-units --type=service
+
+Which man page shows specific configuration options for a service unit configuration?
+
+$ man systemd.service
+
+
+Which command(s) would perform a reboot on the system?
+$ systemctl reboot, reboot, shutdown -r
+
+Which command(s) would move the system into the graphical.target?
+
+$ systemctl isolate graphical.target
+
+Which command(s) would power off the system?
+$ poweroff, systemctl poweroff, shutdown -P
+
+Which command(s) would reboot the system five minutes from now and notify all users on the system of the impending reboot?
+$ shutdown -r +5 rebooting!
+
+
+As part of the application build-out on your Red Hat 7 Enterprise system, you have a process that is running backend maintenance tasks. These maintenance tasks are not important and shouldn't take priority over other tasks on the system. How might you tell the system to assign CPU usage to this process only after other higher priority items have been completed or only if they do not need the CPU?
+
+--> Set the nice priority to 19 on the process using renice, nice or top.
+
+If your system is currently in the graphical.target, which command(s) would move it out of the graphical.target and into the multi-user.target?
+
+systemctl isolate multi-user.target
+
+
+What is the percentage load average for the following processor count and given load for the 5 minute load average?
+[root@localhost]# uptime 09:55:50 up 16:35, 3 users, load average: 4.05, 3.03, 3.75 
+[root@localhost ~]# grep "model name" /proc/cpuinfo | wc -l 
+5
+
+--> 60%
+
+
+Where are the configuration files for systemd located?
+
+$ /usr/lib/systemd/system, /etc/systemd/system
+
+Which command(s) would show all available targets on the system?
+
+$ systemctl list-unit-files --type=target
+
+
+
+How do you find all man pages associated with systemd?
+
+$ apropos systemd
+
+
+ Which command(s) would list unit configuration files that are dependencies for the network target?
+
+$ systemctl list-dependencies network.target
+
+The command systemctl set-default sets the default target for the system at boot time.
+
+True
+
+
+Which command creates or updates the manual page index caches; something you should run after installing new man pages?
+
+$ mandb
+
+
+How do you view the disabled/enabled settings of all units with the type "service"?
+
+$ systemctl list-unit-files --type=service
+
+####################################################################################################
+
+Exercise: Working with Systemd and Targets
+
+Install the httpd package.
+1.yum install httpd
+
+View all active targets on the system
+2. systemctl list-units --type=target
+
+View all targets installed on the disk.
+3.systemctl list-units --type=target --all
+
+Display the current default target.
+4.systemctl get-default
+
+Change the default target to the multi-user target if the multi-user target is available.
+5.systemctl list-units --type=target | grep multi-user.target
+multi-user.target   loaded active active Multi-User System
+root@localhost]# systemctl set-default multi-user.target
+
+
+View all available systemd configuration units.
+6.systemctl -t help
+
+
+Find the status of the sshd service.
+7.systemctl status sshd.service
+
+
+List all active service unit configuration files.
+8.systemctl list-units --type=service
+
+ Determine if the httpd service is active.
+9.systemctl is-active httpd
+
+Determine if the httpd service is enabled, and, if it is not, enable it.
+10.systemctl is-enabled httpd
+
+
+View enabled and disabled settings for all units of the type "service".
+11.systemctl list-unit-files --type=service --all
+
+List all service unit configuration files, whether they are active or not.
+12.[root@localhost]# systemctl list-units --all
+OR
+[root@localhost]# systemctl list-units --type=service --all
+
+#############################################################################################################################
+
+
+LIST, CREATE, AND DELETE PARTITIONS ON MBR AND GPT DISKS
+**************************************************************************
+
+
+mount= Attaching another hard-drive or file-system
+
+/dev/xvdf (disk for linux academy)
+
+#############################################################################
+
+CREATING A NEW MBR(MASTER BOOT RECORD) PARTITION
+
+fdisk---> manipulate disk partition table
+	  fdisk  (in  the  first  form of invocation) is a menu-driven program for creation and
+       manipulation of partition tables.  It understands GPT (experimental  for  now),  MBR,
+       Sun, SGI and BSD partition tables.
+
+       fdisk  does  not  use  DOS-compatible mode and cylinders as display units by default.
+       The old deprecated DOS behavior can be enabled with the  '-c=dos  -u=cylinders'  com‐
+       mand-line options.
+
+       Hard  disks  can  be  divided into one or more logical disks called partitions.  This
+       division is recorded in the partition table, found in sector 0 of the disk.  (In  the
+       BSD world one talks about `disk slices' and a `disklabel'.)
+
+fdisk usage for creating a partition:
+
+
+[root@andre-merten-e7d00e0c3 dev]# fdisk xvdf
+WARNING: fdisk GPT support is currently new, and therefore in an experimental phase. Use at your own discretion.
+Welcome to fdisk (util-linux 2.23.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+
+Command (m for help): m
+Command action
+   d   delete a partition
+   g   create a new empty GPT partition table
+   G   create an IRIX (SGI) partition table
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+# this creates a 500M partition on the xvdf device disk, we are using a 'Linux file system' type
+# make sure to 'w'(write the changes)
+# run partprobe after altering any disk partitions
+
+Command (m for help): n
+Partition number (2-128, default 2): 
+First sector (34-2097118, default 1026048): 
+Last sector, +sectors or +size{K,M,G,T,P} (1026048-2097118, default 2097118): +500M
+Created partition 2
+
+Partition type (type L to list all types): 20
+Changed type of partition 'Linux filesystem' to 'Linux filesystem'
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+[root@andre-merten-e7d00e0c3 dev]# partprobe
+[root@andre-merten-e7d00e0c3 dev]# partprobe -s
+/dev/xvda: gpt partitions 1 2
+/dev/xvdf: gpt partitions 1 2
+
+partprobe ---> is  a  program that informs the operating system kernel of partition table
+       changes, by requesting that the operating system re-read the partition table.
+##################################################################################################################################
+
+MAKE THE FILE SYSTEM TO MOUNT
+
+Now we created the partiton above using the fdisk command but what do we do with the partition? We must a filesystem in order the mount it.
+
+
+
+XFS(Extend File system) is a default root filesystem in Redhat Linux ES 7 onwards. This shows redhat has plan to shift from ext filesystems. XFS filesystem is originally developed by  Silicon Graphics. XFS is a highly scalable, high-performance file system compare to ext4 and it supports up to 16 exabytes filesystem and 8 exabytes files.  XFS supports metadata journaling, which facilitates quicker crash recovery on the power failures and system crash.It can also be defragmented and extended while mounted and active.It also supports quota. 
+
+# makes a file system with file system type 'xfs'
+$ mkfs -t xfs xvdf1
+
+mkfs  is used to build a Linux filesystem on a device, usually a hard disk partition.
+       The device argument is either the device name (e.g.  /dev/hda1, /dev/sdb2), or a reg‐
+       ular  file  that  shall  contain  the filesystem.  The size argument is the number of
+       blocks to be used for the filesystem.
+
+SYNOPSIS
+       mkfs [options] [-t type] [fs-options] device [size]
+
+$ mkfs -t xfs xvdf1
+OR
+$ mkfs.xfs xvdf1
+
+[root@andre-merten-e7d00e0c3 dev]# mkfs.xfs xvdf2
+
+meta-data=xvdf2                  isize=512    agcount=4, agsize=32000 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=128000, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=855, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+[root@andre-merten-e7d00e0c3 dev]# lsblk -f
+NAME    FSTYPE LABEL UUID                                 MOUNTPOINT
+xvda                                                      
+├─xvda1                                                   
+└─xvda2 xfs          668dbd02-c201-44bc-be76-f606fc9ab8db /
+xvdf                                                      
+├─xvdf1 xfs          b92f0b4c-735d-4f92-9ebd-10467916cdd6 
+└─xvdf2 xfs          4204242e-1271-4b3a-b54a-011f962782bb
+
+#############################################################################################################################
+
+QUIZ RESULTS: CONFIGURE LOCAL STORAGE
+
+***********************************************************
+
+1) After adding 50 GB more of physical storage to your existing volume group, you need to extend your /dev/battlestar/galactica volume group to include an additional 20GB of storage. How might you accomplish this task?
+
+
+
+Correct answer
+lvextend -L +20G /dev/battlestar/galactica
+
+2) You're in the middle of the Red Hat certification test and forget which LVM commands you need to use to perform the specified tasks. What option(s) do you have?
+
+
+
+Correct answer
+man lvm, info lvm
+
+3) What is the limit for primary partitions when using the MBR partition type?
+
+
+
+Correct answer
+4
+
+4) You are extending a logical volume. To do this, you have to add the /dev/xvdj device to the volume group "battlestar". Which command would you issue to accomplish this task?
+
+
+
+Correct answer
+vgextend battlestar /dev/xvdj
+
+5) Which command is used to assign a swap signature to a device?
+
+
+
+Correct answer
+mkswap
+
+6) Which file on the operating system contains information about which partitions the OS is reading?
+
+
+
+Correct answer
+/proc/partitions
+
+7) How many primary partitions can a GPT partition table have?
+
+
+
+Correct answer
+128
+
+8) What is the maximum disk size for a GPT-based partition?
+
+
+
+Correct answer
+8 ZiB
+
+9) Which file system is best used with LVM volumes?
+
+
+
+Correct answer
+XFS
+
+10) After making partition changes, the partition changes do not appear in the /proc/partitions. How can you force the kernel to reload the partition tables?
+
+
+Correct answer
+issue the partprobe command
+
+11) Which tool(s) would you use to mange GPT-based partitions?
+
+
+
+Correct answer
+gdisk, parted
+
+12) Which command displays information about a swap device?
+
+
+
+Correct answer
+swapon -s
+
+13) For an MBR partition, what is the max disk size a partition can be?
+
+
+
+Correct answer
+2TiB
+
+14) What command is used to inform the OS of partition table changes?
+
+
+
+Correct answer
+partprobe
+
+15) You've just increased the size of the /dev/battlestar/galactica LVM volume. This volume is mounted in /mnt/mydir; which command would you issue for the operating system and file system to recognize the increase in size on the device?
+
+
+
+Correct answer
+xfs_growfs /mnt/mydir
+
+16) Swap space can be created out of GPT-, MBR- and LVM-based partitions/volumes.
+
+
+
+Correct answer
+True
+
+17) Given the volume group "battlestar" and a physical volume in the volume group /dev/xvdf1, which command would accurately create a 19 G logical volume out of /dev/xvdf1 with a volume name of "galactica"?
+
+
+
+Correct answer
+lvcreate -n galactica -L 19G battlestar
+
+18) Select the correct order of tasks for creating an LVM for the first time.
+
+
+
+Correct answer
+Create the physical volume (pvcreate), create the volume group (vgcreate), create the logical volume (lvcreate)
+
+19) What are two ways to find information about swap devices enabled on the system?
+
+
+
+Correct answer
+swapon -s, cat /proc/swaps
+
+20) The file system needs to be created on the device after the logical volume is created (lvcreate).
+
+
+
+Correct answer
+True
+
+##############################################################################################################################
+
+Exercise: Working with MBR Partitions
+
+***********************************************
+
+Start a Red Hat 7 lab server and mount a new disk. Once completed, log in to the system and navigate to the /dev directory.
+
+[root@localhost] cd /dev
+2. Create a primary Linux partition that is 500M in size on the attached disk.
+
+[root@localhost] fdisk xvdf
+
+Command (m for help): n 
+Partition type:    p   primary (0 primary, 0 extended, 4 free)    e   extended Select (default p): p 
+Partition number (1-4, default 1): 
+First sector (2048-2097151, default 2048): 
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-2097151, default 2097151): +500M
+Partition 1 of type Linux and of size 500 MiB is set 
+Command (m for help): 
+3. Set the partition type for a basic Linux volume.
+
+Command (m for help): t
+Selected partition 1 Hex code (type L to list all codes): 83
+Changed type of partition 'Linux' to 'Linux' (notice the default is already Linux).
+
+4. Write changes and exit.
+
+Command (m for help): w 
+The partition table has been altered! Calling ioctl() to re-read partition table. Syncing disks.
+5. Issue the command to list the block device and it's UUID (Universally Unique Identifier).
+
+[root@localhost] blkid
+6. Create an XFS filesystem on the disk.
+
+[root@localhost] mkfs -t xfs /dev/xvdf1
+7. Mount the partition to /mnt/mymount.
+
+[root@localhost] mkdir /mnt/mymount
+[root@localhost] mount /dev/xvdf1 /mnt/mymount
+
+[root@localhost] df -h
+Filesystem      Size  Used Avail Use% Mounted on 
+/dev/xvda2      6.0G  3.9G  2.1G  65% /
+devtmpfs        482M     0  482M   0% /dev 
+tmpfs          497M     0  497M   0% /dev/shm 
+tmpfs           497M   13M  484M   3% /run 
+tmpfs          497M     0  497M   0% /sys/fs/cgroup
+/dev/xvdf1 497M   26M  472M   6% /mnt/mymount
+8. Configure the disk to mount to the /mnt/mymount mount point automatically during system boot.
+
+[root@localhost] blkid
+/dev/xvdf1: UUID="" TYPE="xfs"
+
+[root@localhost] vim fstab 
+UUID="your uuid here" /mnt/mymount xfs defaults 1 1
+
+[root@localhost] umount /mnt/mymount
+[root@localhost] mount -a
+[root@localhost] df -h
+
+Filesystem Size Used Avail Use% Mounted on
+/dev/xvda2 6.0G 3.9G 2.1G 65% /
+devtmpfs 482M 0 482M 0% /dev
+tmpfs 497M 13M 484M 3% /run
+tmpfs 497M 0 497M 0% /sys/fs/cgroup
+/dev/xvdf1 497M 26M 472M 6% /mnt/mymount
+
+##############################################################################################################################
+
+Exercise: Creating Persistent Mounts with File System Labels
+
+********************************************************************
+
+. Attach a LinuxAcademy.com external device (mount) to the lab server.
+
+2. Create two partitions, 500M each, on the device.
+
+[root@localhost dev]# fdisk /dev/xvdfWelcome to fdisk (util-linux 2.23.2).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+Command (m for help): n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 
+Using default response p
+Partition number (1-4, default 1): 
+First sector (2048-2097151, default 2048):  
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-2097151, default 2097151): +500M
+Partition 1 of type Linux and of size 500 MiB is set
+ 
+Command (m for help): n
+Partition type:
+   p   primary (1 primary, 0 extended, 3 free)
+   e   extended
+Select (default p): 
+Using default response p
+Partition number (2-4, default 2): 
+First sector (1026048-2097151, default 1026048): 
+Using default value 1026048
+Last sector, +sectors or +size{K,M,G} (1026048-2097151, default 2097151): +500M
+Partition 2 of type Linux and of size 500 MiB is set
+ 
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+3. On the "xvdf1" partition, create an XFS file system.
+
+[root@localhost dev]# mkfs -t xfs xvdf1
+4. On the "xvdf2" partition, create an EXT4 file system.
+
+[root@localhost dev]# mkfs -t ext4  xvdf2
+5. On the "xvdf1" partition, label the filesystem as "filesystem1".
+
+[root@localhost dev]# xfs_admin -L "filesystem1" /dev/xvdf1
+[root@localhost dev]# xfs_admin -l /dev/xvdf1
+label = "filesystem1"
+6. On the "xvdf2"partition, label the filesystem as "filesystem2".
+
+[root@localhost dev]# tune2fs -L "filesystem2" /dev/xvdf2
+or
+[root@localhost dev]# e2label /dev/xvdf2
+filesystem2
+7. Create a persistent mount in the /etc/fstab file with defaults as the mount option for the xvdf1 partition and use the mount point /mnt/mount1.
+
+LABEL=filesystem1 /mnt/mount1 xfs defaults 1 2 
+8. Create a persistent mount in the /etc/fstab file with defaults as the mount option for the xvdf2 partition and use the mount /mnt/mount2. Set the fsck check to 2 and the dump to 1.
+
+LABEL=filesystem2 /mnt/mount2 ext4 defaults 1 2
+
+##############################################################################################################################
+
+Exercise: Creating Swap Space
+
+***************************************************
+
+1. Create a LinuxAcademy.com lab server and mount a disk.
+
+2. The LinuxAcademy.com lab servers already have swap enabled, so first run swapoff to disable the /swapfile in the /etc/fstab file.
+
+[root@localhost etc]# swapoff -a
+Note: swapoff -a disables the swap space listed in /etc/fstab.
+
+3. Remove the entry /swapfile from the /etc/fstab file.
+
+[root@localhost etc# vim fstab
+#
+# /etc/fstab
+# Created by anaconda on Fri Oct 17 18:33:48 2014
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+UUID=668dbd02-c201-44bc-be76-f606fc9ab8db /                       xfs     defaults        1 1
+4. Verify there is no current swap space available
+
+[root@localhost etc]# free -m
+             total       used       free     shared    buffers     cached
+Mem:           992        225        767         12          1         82
+-/+ buffers/cache:        141        851
+Swap:            0          0          0
+5. Using fdisk, create a partition that uses the entire /dev/xvdf disk; make sure to label the device correctly.
+
+[root@localhost dev]# fdisk xvdf
+Welcome to fdisk (util-linux 2.23.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+ 
+Device does not contain a recognized partition table
+Building a new DOS disklabel with disk identifier 0x69baf224.
+ 
+Command (m for help): n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 
+Using default response p
+Partition number (1-4, default 1): 
+First sector (2048-2097151, default 2048): 
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-2097151, default 2097151): 
+Using default value 2097151
+Partition 1 of type Linux and of size 1023 MiB is set
+ 
+Command (m for help): t
+Selected partition 1
+Hex code (type L to list all codes): 82
+Changed type of partition 'Linux' to 'Linux swap / Solaris'
+ 
+Command (m for help): w
+The partition table has been altered!
+ 
+Calling ioctl() to re-read partition table.
+Syncing disks.
+6. Format the device with the swap signature.
+
+[root@localhost dev]# mkswap /dev/xvdf1
+Setting up swapspace version 1, size = 1047548 KiB
+no label, UUID=5713eae2-de6b-4485-af5d-1c659765cd92
+7. Activate the swap space.
+
+[root@localhost dev]# swapon /dev/xvdf1
+[root@localhost dev]# free -m
+             total       used       free     shared    buffers     cached
+Mem:           992        216        776         12          0         79
+-/+ buffers/cache:        135        857
+Swap:         3046          0       3046
+8. Add swap space to the /etc/fstab so that it is a persistent mount.
+
+[root@localhost dev]# blkid
+/dev/xvda2: UUID="" TYPE="xfs" PARTUUID="9146b810-9a31-4c10-a206-01b0bbaca807" 
+/dev/xvdf1: UUID="" TYPE="swap" 
+Grab the UUID to mount the swap device.
+[root@localhost dev]# vim /etc/fstab
+#
+# /etc/fstab
+#
+UUID=668dbd02-c201-44bc-be76-f606fc9ab8db /                       xfs     defaults        1 1
+UUID=YOUR-UUID swap  swap    defaults 0 0 
+9. Activate the swap space that is added in the /etc/fstab file.
+
+Since we activated it manually already, this manually deactivates it, then activates it based on the /etc/fstab file.
+
+[root@localhost dev]# swapoff /dev/xvdf1
+Now activate it persistently based off the /etc/fstab entry:
+
+[root@localhost dev]# swapon -a
+-a activates all swap spaces located in the /etc/fstab.
+
+
+###########################################################################################################################
+
+
+lsblk command – list block device information
+*************************************************
+
+BY RASHO · 21/09/2014
+
+lsblk command is used to list information about all available block devices, however, it does not list information about RAM disks. Examples of block devices are hard disk, flash drives, CD-ROM…
+
+Install lsblk
+Ubuntu and Linux Mint installation
+The command lsblk comes in the package util-linux.
+
+sudo apt-get install util-linux -y
+Fedora and CentOS installation
+
+sudo yum install util-linux-ng
+How to use lsblk command
+lsblk command by default will list all block devices in a tree-like format.
+Example: Type lsblk in your terminal:
+
+rasho@Gandalf ~ $ lsblk
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sda      8:0    0 465,8G  0 disk 
+├─sda1   8:1    0   100M  0 part 
+├─sda2   8:2    0    80G  0 part 
+├─sda3   8:3    0 297,9G  0 part 
+├─sda4   8:4    0     1K  0 part 
+├─sda5   8:5    0    28G  0 part /
+├─sda6   8:6    0   3,7G  0 part [SWAP]
+└─sda7   8:7    0  56,2G  0 part /home
+sr0     11:0    1  1024M  0 rom
+There are seven columns namely:
+NAME: This is the device name.
+MAJ:MIN: This column shows the major and minor device number.
+RM: This column shows whether the device is removable or not.
+SIZE: This is column give information on the size of the device.
+RO: This indicates whether a device is read-only.
+TYPE:This column shows information whether the block device is a disk or a partition(part) within a disk.
+MOUNTPOINT: This column indicates mount point on which the device is mounted.
+
+ 
+List all devices
+To show list all devices including empty devices use following command:
+
+lsblk -a
+Example output:
+
+rasho@Gandalf ~ $ lsblk -a
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sda      8:0    0 465,8G  0 disk 
+├─sda1   8:1    0   100M  0 part 
+├─sda2   8:2    0    80G  0 part 
+├─sda3   8:3    0 297,9G  0 part 
+├─sda4   8:4    0     1K  0 part 
+├─sda5   8:5    0    28G  0 part /
+├─sda6   8:6    0   3,7G  0 part [SWAP]
+└─sda7   8:7    0  56,2G  0 part /home
+sr0     11:0    1  1024M  0 rom  
+ram0     1:0    0    64M  0 disk 
+ram1     1:1    0    64M  0 disk 
+ram2     1:2    0    64M  0 disk 
+ram3     1:3    0    64M  0 disk 
+ram4     1:4    0    64M  0 disk 
+ram5     1:5    0    64M  0 disk 
+ram6     1:6    0    64M  0 disk 
+ram7     1:7    0    64M  0 disk 
+ram8     1:8    0    64M  0 disk 
+ram9     1:9    0    64M  0 disk 
+loop0    7:0    0         0 loop 
+loop1    7:1    0         0 loop 
+loop2    7:2    0         0 loop 
+loop3    7:3    0         0 loop 
+loop4    7:4    0         0 loop 
+loop5    7:5    0         0 loop 
+loop6    7:6    0         0 loop 
+loop7    7:7    0         0 loop 
+ram10    1:10   0    64M  0 disk 
+ram11    1:11   0    64M  0 disk 
+ram12    1:12   0    64M  0 disk 
+ram13    1:13   0    64M  0 disk 
+ram14    1:14   0    64M  0 disk 
+ram15    1:15   0    64M  0 disk
+List Device Permissions and Owner
+To display information related to the owner, group and mode of the block device, use the -m option.
+
+rasho@Gandalf ~ $ lsblk -m
+NAME     SIZE OWNER GROUP MODE
+sda    465,8G root  disk  brw-rw----
+├─sda1   100M root  disk  brw-rw----
+├─sda2    80G root  disk  brw-rw----
+├─sda3 297,9G root  disk  brw-rw----
+├─sda4     1K root  disk  brw-rw----
+├─sda5    28G root  disk  brw-rw----
+├─sda6   3,7G root  disk  brw-rw----
+└─sda7  56,2G root  disk  brw-rw----
+sr0     1024M root  cdrom brw-rw----
+Print the SIZE column in bytes
+Use the -b option to achieve this :
+
+rasho@Gandalf ~ $ lsblk -b
+NAME   MAJ:MIN RM         SIZE RO TYPE MOUNTPOINT
+sda      8:0    0 500107862016  0 disk 
+├─sda1   8:1    0    104857600  0 part 
+├─sda2   8:2    0  85878374400  0 part 
+├─sda3   8:3    0 319815680000  0 part 
+├─sda4   8:4    0         1024  0 part 
+├─sda5   8:5    0  29998710784  0 part /
+├─sda6   8:6    0   3999268864  0 part [SWAP]
+└─sda7   8:7    0  60298362880  0 part /home
+sr0     11:0    1   1073741312  0 rom
+Hide the information related to slaves
+If you do not want to display slave related information, use the -d option.
+
+rasho@Gandalf ~ $ lsblk -d
+NAME MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sda    8:0    0 465,8G  0 disk 
+sr0   11:0    1  1024M  0 rom  
+So you can see that the information related to slaves is not displayed in the output.
+
+
+########################################################################################################################
+
+Create, Mount, Unmount and Use VFAT, EXT4 and XFS File Systems
+
+********************************************************************************
+
+What is the difference between VFAT and FAT32 file systems
+Copied from http://technet.microsoft.com/en-us/library/cc750354.aspx
+
+What's FAT?
+FAT may sound like a strange name for a file system, but it's actually an acronym for File Allocation Table. Introduced in 1981, FAT is ancient in computer terms. Because of its age, most operating systems, including Microsoft Windows NT®, Windows 98, the Macintosh OS, and some versions of UNIX, offer support for FAT.
+
+The FAT file system limits filenames to the 8.3 naming convention, meaning that a filename can have no more than eight characters before the period and no more than three after. Filenames in a FAT file system must also begin with a letter or number, and they can't contain spaces. Filenames aren't case sensitive.
+
+What About VFAT?
+Perhaps you've also heard of a file system called VFAT. VFAT is an extension of the FAT file system and was introduced with Windows 95. VFAT maintains backward compatibility with FAT but relaxes the rules. For example, VFAT filenames can contain up to 255 characters, spaces, and multiple periods. Although VFAT preserves the case of filenames, it's not considered case sensitive.
+
+When you create a long filename (longer than 8.3) with VFAT, the file system actually creates two different filenames. One is the actual long filename. This name is visible to Windows 95, Windows 98, and Windows NT (4.0 and later). The second filename is called an MS-DOS® alias. An MS-DOS alias is an abbreviated form of the long filename. The file system creates the MS-DOS alias by taking the first six characters of the long filename (not counting spaces), followed by the tilde [~] and a numeric trailer. For example, the filename Brien's Document.txt would have an alias of BRIEN'~1.txt.
+
+An interesting side effect results from the way VFAT stores its long filenames. When you create a long filename with VFAT, it uses one directory entry for the MS-DOS alias and another entry for every 13 characters of the long filename. In theory, a single long filename could occupy up to 21 directory entries. The root directory has a limit of 512 files, but if you were to use the maximum length long filenames in the root directory, you could cut this limit to a mere 24 files. Therefore, you should use long filenames very sparingly in the root directory. Other directories aren't affected by this limit.
+
+You may be wondering why we're discussing VFAT. The reason is it's becoming more common than FAT, but aside from the differences I mentioned above, VFAT has the same limitations. When you tell Windows NT to format a partition as FAT, it actually formats the partition as VFAT. The only time you'll have a true FAT partition under Windows NT 4.0 is when you use another operating system, such as MS-DOS, to format the partition.
+
+# TO CREATE A SHARED FILE SYSTEM TO BE COMPATIBLE WITH WINDOWS USER USE A 'VFAT' FILESYTEM THEN USE 'SAMBA' TO CONNECT OVER THE NETWORK. https://en.wikipedia.org/wiki/Samba_(software)
+
+FAT32
+FAT32 is actually an extension of FAT and VFAT, first introduced with Windows 95 OEM Service Release 2 (OSR2). FAT32 greatly enhances the VFAT file system but it does have its drawbacks.
+
+The greatest advantage to FAT32 is that it dramatically increases the amount of free hard disk space. To illustrate this point, consider that a FAT partition (also known as a FAT16 partition) allows only a certain number of clusters per partition. Therefore, as your partition size increases, the cluster size must also increase. For example, a 512-MB FAT partition has a cluster size of 8K, while a 2-GB partition has a cluster size of 32K.
+
+This may not sound like a big deal until you consider that the FAT file system only works in single cluster increments. For example, on a 2-GB partition, a 1-byte file will occupy the entire cluster, thereby consuming 32K, or roughly 32,000 times the amount of space that the file should consume. This rule applies to every file on your hard disk, so you can see how much space can be wasted.
+
+Converting a partition to FAT32 reduces the cluster size (and overcomes the 2-GB partition size limit). For partitions 8 GB and smaller, the cluster size is reduced to a mere 4K. As you can imagine, it's not uncommon to gain back hundreds of megabytes by converting a partition to FAT32, especially if the partition contains a lot of small files.
+
+Note: This section of the quote/ article (1999) is out of date. Updated info quote below.
+
+As I mentioned, FAT32 does have limitations. Unfortunately, it isn't compatible with any operating system other than Windows 98 and the OSR2 version of Windows 95. However, Windows 2000 will be able to read FAT32 partitions.
+
+The other disadvantage is that your disk utilities and antivirus software must be FAT32-aware. Otherwise, they could interpret the new file structure as an error and try to correct it, thus destroying data in the process.
+
+Finally, I should mention that converting to FAT32 is a one-way process. Once you've converted to FAT32, you can't convert the partition back to FAT16. Therefore, before converting to FAT32, you need to consider whether the computer will ever be used in a dual-boot environment. I should also point out that although other operating systems such as Windows NT can't directly read a FAT32 partition, they can read it across the network. Therefore, it's no problem to share information stored on a FAT32 partition with other computers on a network that run older operating systems.
+
+Updated mentioned in comment by Doktor-J (assimilated to update out of date answer in case comment is ever lost):
+
+I'd just like to point out that most modern operating systems (WinXP/Vista/7/8, MacOS X, most if not all Linux variants) can read FAT32, contrary to what the second-to-last paragraph suggests.
+
+The original article was written in 1999, and being posted on a Microsoft website, probably wasn't concerned with non-Microsoft operating systems anyways.
+
+The operating systems "excluded" by that paragraph are probably the original Windows 95, Windows NT 4.0, Windows 3.1, DOS, etc.
+
+
+What is EXT4 filesystem?
+
+Bigger File System and File Sizes
+Currently, Ext3 support 16 TiB of maximum file system size and 2 TiB of maximum file size. Ext4 adds 48-bit block addressing, so it will have 1 EiB1 of maximum file system size and 16 TiB of maximum file size. 
+
+#####################################################################################################################
+# FOR EXT4 FILESYSTEM INFO USE:
+ 
+$ dumpe2fs ----> THIS IS FOR EXT4 type filesystems
+
+prints  the  super  block  and  blocks group information for the filesystem
+       present on device.
+
+       Note: When used with a mounted filesystem, the printed  information  may  be  old  or
+       inconsistent.
+
+#######################################################################################################################
+
+# To check and repair VFAT and EXT4 type filesystems
+
+# for VFAT:
+$ fsck.vfat [/dev/device_name*]
+
+# for EXT4:
+$ fsck [/dev/device_name*] ----> Note you do not need to specify 'EXT4' because it is the default with fsck program
+
+######################################################################################################################
+
+# PROCESS FOR CREATING VFAT FILESYSTEM ON RHEL 7*****
+NOTE: This was performed on a Linux Academy Lab Cloud Server!!!!
+
+**************************************************************************
+
+# Create the VFAT DISK/PARTITION
+
+$ fdisk /dev/xvdf
+Welcome to fdisk (util-linux 2.23.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table
+Building a new DOS disklabel with disk identifier 0x55f4c231.
+
+Command (m for help): n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 
+Using default response p
+Partition number (1-4, default 1): 
+First sector (2048-2097151, default 2048): 
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-2097151, default 2097151): 
+Using default value 2097151
+Partition 1 of type Linux and of size 1023 MiB is set
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+
+# CREATING THE VFAT FILESYSTEM
+
+[root@andre-merten-e7d00e0c1 ~]# mkfs.vfat /dev/xvdf1
+mkfs.fat 3.0.20 (12 Jun 2013
+
+# Check and repair filesystem if needed
+
+[root@andre-merten-e7d00e0c1 ~]# fsck.vfat /dev/xvdf1
+fsck.fat 3.0.20 (12 Jun 2013)
+/dev/xvdf1: 0 files, 1/261373 clusters
+
+# make directory to mount to 
+[root@andre-merten-e7d00e0c1 ~]# mkdir /mnt/vfat
+
+# Mount the VFAT device and verify it is in-fact mounted
+[root@andre-merten-e7d00e0c1 ~]# mount /dev/xvdf1 /mnt/vfat
+
+[root@andre-merten-e7d00e0c1 ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/xvda2       20G  8.6G   12G  43% /
+devtmpfs        463M     0  463M   0% /dev
+tmpfs           496M     0  496M   0% /dev/shm
+tmpfs           496M   13M  483M   3% /run
+tmpfs           496M     0  496M   0% /sys/fs/cgroup
+tmpfs           100M     0  100M   0% /run/user/1001
+/dev/xvdf1     1021M  4.0K 1021M   1% /mnt/vfat
+
+ NOTE: NOW IN ORDER FOR THIS MOUNTED DEVICE TO BE ABLE TO SURVIVE A REBOOT WE MUST ENSURE THAT THE MOUNTED DEVICE IS 'PERSISTENT'
+WE DO THIS BY ADDING THE DEVICE TO '/etc/fstab' CONFIGURATION FILE. THEN THE DEVICE WILL AUTOMATICALLY MOUNT WHEN THE SYSTEM IS REBOOTED.
+
+EXAMPLE PERSISTENT MOUNT:
+
+
+#
+# /etc/fstab
+# Created by anaconda on Fri Oct 17 18:33:48 2014
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+
+[NAME_OF_DEVICE/UUID]                    [MOUNT_POINT]           [FS_TYPE]  [PERMISSONS]  [FSCK_DUMP] [FSCK_CHECK]
+
+UUID=668dbd02-c201-44bc-be76-f606fc9ab8db /                       xfs     defaults        1 1
+
+UUID=bc68e182-7978-48dc-baf4-823616fdd4f3 swap swap defaults 0 0
+
+UUID=b04f08af-8915-4d25-be95-173dbe054d05 swap swap defaults 0 0
+
+/dev/xvdf1 /mnt/vfat vfat defaults 0 2
+
+###################################################################################################################################
+
+# CREATING A EXT4 FILESYSTEM
+
+[root@andre-merten-e7d00e0c1 ~]# fdisk /dev/xvdf
+Welcome to fdisk (util-linux 2.23.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+
+Command (m for help): n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 
+Using default response p
+Partition number (1-4, default 1): 
+First sector (2048-2097151, default 2048): 
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-2097151, default 2097151): 
+Using default value 2097151
+Partition 1 of type Linux and of size 1023 MiB is set
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+[root@andre-merten-e7d00e0c1 ~]# mkfs.ext4 /dev/xvdf1
+mke2fs 1.42.9 (28-Dec-2013)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+65536 inodes, 261888 blocks
+13094 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=268435456
+8 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks: 
+        32768, 98304, 163840, 229376
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+##############################
+
+# make directory and create mount point for 'ext4' device 
+[root@andre-merten-e7d00e0c1 ~]# mkdir /mnt/ext4
+
+# Mount the 'non persistent' device to ensure it mounts properly
+[root@andre-merten-e7d00e0c1 ~]# mount /dev/xvdf1 /mnt/ext4
+
+# verify it has mounted
+[root@andre-merten-e7d00e0c1 ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/xvda2       20G  8.6G   12G  43% /
+devtmpfs        463M     0  463M   0% /dev
+tmpfs           496M     0  496M   0% /dev/shm
+tmpfs           496M   13M  483M   3% /run
+tmpfs           496M     0  496M   0% /sys/fs/cgroup
+tmpfs           100M     0  100M   0% /run/user/1001
+tmpfs           100M     0  100M   0% /run/user/0
+/dev/xvdf1      991M  2.6M  922M   1% /mnt/ext4
+
+
+##################################################################################################################################
+
+# TO CREATE A NEW LABEL FOR THE FILESYSTEM(EXT2-4)
+
+$ tune2fs 
+
+         <command> -L <Name_FS>   <device_or_partition>
+EXAMPLE: tune2fs -L ext4_fs_test /dev/xvdf1
+
+
+-L ----> allows for 'label' name
+
+allows the system administrator to adjust various tunable filesystem  parame‐
+       ters  on  Linux ext2, ext3, or ext4 filesystems.  The current values of these options
+       can be displayed by using the -l option  to  tune2fs(8)  program,  or  by  using  the
+       dumpe2fs(8) program.
+
+       The  device  specifier can either be a filename (i.e., /dev/sda1), or a LABEL or UUID
+       specifier:   "LABEL=volume-name"    or    "UUID=uuid".     (i.e.,    LABEL=home    or
+       UUID=e40486c6-84d5-4f2f-b99c-032281799c9d).
+
+# VIEW THE LABEL WITH DUMPE2FS
+
+[root@andre-merten-e7d00e0c1 ~]# dumpe2fs /dev/xvdf1 | head
+
+dumpe2fs 1.42.9 (28-Dec-2013)
+Filesystem volume name:   ext4_fs_test
+Last mounted on:          <not available>
+Filesystem UUID:          2bd82c72-f375-4abd-8336-e94fc7d90440
+Filesystem magic number:  0xEF53
+Filesystem revision #:    1 (dynamic)
+Filesystem features:      has_journal ext_attr resize_inode dir_index filetype needs_recovery extent 64bit flex_bg sparse_super large_file huge_file uninit_bg dir_nlink extra_isize
+Filesystem flags:         signed_directory_hash 
+Default mount options:    user_xattr acl
+Filesystem state:         clean
+Errors behavior:          Continue
+
+###############################################################################################################################
+
+# CREATING A 'XFS' FILESYSTEM
+
+# WHY XFS?
+  --> XFS is a high-performance 64-bit journaling file system
+
+Capacity
+XFS is a 64-bit file system[20] and supports a maximum file system size of 8 exbibytes minus one byte (263 − 1 bytes), but limitations imposed by the host operating system can decrease this limit. 32-bit Linux systems limit the size of both the file and file system to 16 tebibytes.
+
+XFS excels in the execution of parallel input/output (I/O) operations due to its design, which is based on allocation groups (a type of subdivision of the physical volumes in which XFS is used- also shortened to AGs). Because of this, XFS enables extreme scalability of I/O threads, file system bandwidth, and size of files and of the file system itself when spanning multiple physical storage devices.
+
+XFS ensures the consistency of data by employing metadata journaling and supporting write barriers. Space allocation is performed via extents with data structures stored in B+ trees, improving the overall performance of the file system, especially when handling large files. Delayed allocation assists in the prevention of file system fragmentation; online defragmentation is also supported. A feature unique to XFS is the pre-allocation of I/O bandwidth at a pre-determined rate; this is suitable for many real-time applications. However, this feature was supported only on IRIX, and only with specialized hardware.
+
+A notable XFS user, NASA Advanced Supercomputing Division, takes advantage of these capabilities deploying two 300+ terabyte XFS filesystems on two SGI Altix archival storage servers, each of which is directly attached to multiple Fibre Channel disk arrays.
+
+############################################################################################################################
+
+# FIRST LET'S DELETE OUR EXISTING FILESYSTEM(IN OUR CASE 'EXT4')
+# DO THIS BY PASSING -f TO MKFS.XFS TO ENSURE ALL TRACES OF PREVIOUS FS ARE DELETED
+
+# list out available 'block' devices 
+[root@andre-merten-e7d00e0c1 ~]# ls /dev/xvd*
+/dev/xvda  /dev/xvda1  /dev/xvda2  /dev/xvdf
+
+# create the entire disk partion for 'xfs' file system
+
+[root@andre-merten-e7d00e0c1 ~]# fdisk /dev/xvdf
+Welcome to fdisk (util-linux 2.23.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+
+Command (m for help): n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 
+Using default response p
+Partition number (1-4, default 1): 
+First sector (2048-2097151, default 2048): 
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-2097151, default 2097151): 
+Using default value 2097151
+Partition 1 of type Linux and of size 1023 MiB is set
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+
+# create the 'xfs' type file system and erase any traces of previous file systems
+
+[root@andre-merten-e7d00e0c1 ~]# mkfs.xfs -f /dev/xvdf1
+
+meta-data=/dev/xvdf1             isize=512    agcount=4, agsize=65472 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=261888, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=855, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+************************************************************************************************
+-f     Force overwrite when an existing filesystem is detected  on  the  device.   By
+              default,  mkfs.xfs will not write to the device if it suspects that there is a
+              filesystem or partition table on the device already.
+*************************************************************************************************
+
+# make the mount point directory
+[root@andre-merten-e7d00e0c1 ~]# mkdir /mnt/xfs
+
+# list out all mount points
+[root@andre-merten-e7d00e0c1 ~]# ll /mnt/*
+/mnt/ext4:
+total 0
+
+/mnt/vfat:
+total 0
+
+/mnt/xfs:
+total 0
+
+
+##########################################################################################################################
+
+# HOW TO REPAIR, CHECK AND ENSURE CONSISTENCY ON 'XFS' TYPE FILESYSTEM
+
+COMMANDS TO USE:
+
+1. xfs_info [/dev/devicename*]
+2. xfs_admin -L [device_label_name] [/dev/devicename*] ----> Names the 'xfs' filesystem device
+3. xfs_repair [/dev/devicename*]
+
+You should find your device UUID in /dev/disk/by-uuid:
+
+example: using uuid
+xfs_repair /dev/disk/by-uuid/198s5364-a29c-429e-b16d-e772acd
+
+# how to find uuid locations
+There is findfs to translate UUID to device names.
+[root@andre-merten-e7d00e0c1 by-label]# findfs UUID="c97d76ad-c0c4-4147-833d-014befa1f969"
+/dev/xvdf1
+
+example:
+# findfs UUID=01d91a31-d25c-48ea-a10f-6166ce0f5964
+/dev/mapper/SSD-archlinux
+
+
+EXAMPLES:
+
+[root@andre-merten-e7d00e0c1 ~]# mount /dev/xvdf1 /mnt/xfs/
+[root@andre-merten-e7d00e0c1 ~]# xfs_info /dev/xvdf1    
+   
+meta-data=/dev/xvdf1             isize=512    agcount=4, agsize=65472 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0 spinodes=0
+data     =                       bsize=4096   blocks=261888, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal               bsize=4096   blocks=855, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+[root@andre-merten-e7d00e0c1 ~]# xfs_admin -L xfs_testfs /dev/xvdf1
+xfs_admin: /dev/xvdf1 contains a mounted filesystem
+
+fatal error -- couldn't initialize XFS library
+
+[root@andre-merten-e7d00e0c1 ~]# umount /mnt/xfs/
+
+[root@andre-merten-e7d00e0c1 ~]# xfs_admin -L xfs_testfs /dev/xvdf1
+writing all SBs
+new label = "xfs_testfs"
+
+[root@andre-merten-e7d00e0c1 ~]# xfs_repair /dev/xvdf1
+Phase 1 - find and verify superblock...
+Phase 2 - using internal log
+        - zero log...
+        - scan filesystem freespace and inode maps...
+        - found root inode chunk
+Phase 3 - for each AG...
+        - scan and clear agi unlinked lists...
+        - process known inodes and perform inode discovery...
+        - agno = 0
+        - agno = 1
+        - agno = 2
+        - agno = 3
+        - process newly discovered inodes...
+Phase 4 - check for duplicate blocks...
+        - setting up duplicate extent list...
+        - check for inodes claiming duplicate blocks...
+        - agno = 0
+        - agno = 1
+        - agno = 2
+        - agno = 3
+Phase 5 - rebuild AG headers and trees...
+        - reset superblock...
+Phase 6 - check inode connectivity...
+        - resetting contents of realtime bitmap and summary inodes
+        - traversing filesystem ...
+        - traversal finished ...
+        - moving disconnected inodes to lost+found ...
+Phase 7 - verify and correct link counts...
+done
+
+
+##########################################################################################################################
+
+
+# CONFIGURING A SAMBA SERVER
+
+# install necessary packages
+$ yum -y install samba samba-client samba-common cifs-utils
+cd /etc/samba/
+
+# edit the smb.configuration file
+$vim smb.conf
+
+# add the following NOTE this is just a test!!!
+
+[myshare] ---> name of the configuration
+        comment = This is a test share ---> a brief summary of the share directory
+        path = /myshare ---> the path to the directory (must create this)
+        guest ok = no 
+        writeable = yes
+
+
+# create the directory at root myshare
+mkdir /myshare
+
+# change file permissions to 777
+chmod 777 /myshare/
+
+# create a test file in /myshare dir
+echo "Test file" > /myshare/testfile.txt
+  
+# modify SElinux permission
+setenforce -
+setenforce 0
+getenforce
+permissive
+
+
+SUCCESSFUL SMB.CONF TEST
+******************************************************************************************************
+# run 'testparm' to test the smb.conf file for any issues
+testparm
+
+Load smb config files from /etc/samba/smb.conf
+rlimit_max: increasing rlimit_max (1024) to minimum Windows limit (16384)
+Processing section "[homes]"
+Processing section "[printers]"
+Processing section "[print$]"
+Processing section "[myshare]"
+Loaded services file OK.
+Server role: ROLE_STANDALONE
+
+Press enter to see a dump of your service definitions
+
+# Global parameters
+[global]
+        load printers = No
+        printcap name = cups
+        security = USER
+        workgroup = SAMBA
+        idmap config * : backend = tdb
+        cups options = raw
+
+
+[homes]
+        browseable = No
+        comment = Home Directories
+        inherit acls = Yes
+        read only = No
+        valid users = %S %D%w%S
+
+
+[printers]
+        browseable = No
+        comment = All Printers
+        create mask = 0600
+        path = /var/tmp
+        printable = Yes
+
+
+[print$]
+        comment = Printer Drivers
+        create mask = 0664
+        directory mask = 0775
+        force group = @printadmin
+        path = /var/lib/samba/drivers
+        write list = @printadmin root
+
+
+[myshare]
+        comment = This is a test share
+        path = /myshare
+        read only = No
+*************************************************************************************
+# start the samba service daemon
+systemctl start smb
+
+# start nmb service daemon
+systemctl start nmb
+
+# verify status of smb and nmb services
+systemctl -l status smb
+systemctl -l status nmb
+
+
+# inside of /etc/smb.conf
+[global]
+        workgroup = SAMBA
+
+
+# this is a lookup for the workgroup name used to id the server
+$ nmblookup SAMBA
+
+# successful output
+10.0.1.223 SAMBA<00> -------> this returns the [server IP address] [workgroup_Name] [listening]
+
+# unsucessful output
+
+# if the services we not running
+[root@ip-10-0-1-223 samba]# systemctl stop smb
+[root@ip-10-0-1-223 samba]# systemctl stop nmb
+
+# Notice now how the output indicates that the name_query failed
+[root@ip-10-0-1-223 samba]# nmblookup SAMBA
+name_query failed to find name SAMBA
+
+
+
+
