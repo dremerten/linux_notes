@@ -1,0 +1,69 @@
+Instructions
+
+Your company's business intelligence office wants to use a single node Elasticsearch and Kibana instance to ad-hoc analyze some small-data. They will handle the indexing and analyzing of the data themselves, but need you to setup a CentOS 7 host for them with Elasticsearch and Kibana installed and working together. Since this will be used in production, you should install the Elastic services with a custom YUM repository to facilitate easier version managment and upgrading. You can do that with the following configuration information:
+
+name=Elastic Stack repository for 6.x packages
+baseurl=https://artifacts.elastic.co/packages/6.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=1
+autorefresh=1
+type=rpm-md
+
+The business intelligence employees will access kibana locally. Since you will be remote, you can access Kibana to check your work with an SSH tunnel using port forwarding, with this command:
+
+ssh cloud_user@your_public_ip_here -L 5601:localhost:5601
+
+Objectives
+help
+Create a YUM repository for Elastic products
+
+Create the YUM repo file at /etc/yum.repos.d/elastic_stack.repo with the following contents:
+
+[elastic_stack-6.x]
+name=Elastic Stack repository for 6.x packages
+baseurl=https://artifacts.elastic.co/packages/6.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=1
+autorefresh=1
+type=rpm-md
+
+help
+Install Java
+
+We need to install Java before installing elasticsearch with the following command:
+
+yum install java-1.8.0-openjdk -y
+
+help
+Install and enable the Elasticsearch service
+
+With our Elastic repo and Java installed, we can now install Elasticsearch:
+
+yum install elasticsearch -y
+
+Run the following to prepare, enable, and start the Elasticsearch service:
+
+systemctl daemon-reload
+systemctl enable elasticsearch
+systemctl start elasticsearch
+
+help
+Install and enable the Kibana service
+
+Install Kibana as follows:
+
+yum install kibana -y
+
+Run the following to enable and start the Kibana service:
+
+systemctl enable kibana
+systemctl start kibana
+
+To use Kibana remotely open a new SSH connection with the following port forwarding options (be sure to replace public_ip with your actual public IP):
+
+ssh cloud_user@public_ip -L 5601:localhost:5601
+
+Once you have established the SSH session from the previous step, you can access kibana by opening your browser and going to http://localhost:5601
+
