@@ -1,0 +1,23 @@
+Instructions
+
+When launched, this Learning Activity will present you with (2) CentOS 7 servers and connection credentials for each.
+
+The first one will function as the SSH Tunnel Server and the second will function as a client. Once connected to the SSH Tunnel Server, open your Activity Guide for instructions on completing this activity.
+Objectives
+help
+Make sure you can SSH from the CLIENT to the SERVER without a password
+
+You need to generate an SSH key and copy it over to the SERVER from the CLIENT.
+
+To generate the key simply run: ssh keygen and accept all defaults.
+
+To copy the key over to the SERVER simply run:
+
+ssh-copy-id cloud_user@10.0.1.100 and enter the password.
+help
+Verify that your SSH tunnel works.
+
+For this task you need to have an SSH tunnel set up. To do so, simply enter the following command:
+
+ssh -f cloud_user@10.0.1.100 -L 2000:10.0.1.100:80 -N
+

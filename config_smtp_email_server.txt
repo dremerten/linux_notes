@@ -1,0 +1,41 @@
+Instructions
+
+At the start of this activity, you will be provisioned access to (2) CentOS 7 servers, one labeled "SMTP Forwarding SERVER" and one labeled "CLIENT".
+
+Once you have used the provided credentials to connect to the SMTP Forwarding Server, open your Activity Guide for instructions on completing this activity.
+Objectives
+help
+Install Postfix Client and Server Utilities
+
+In order to install the packages we need for the SMTP server and client, we need to install postfix, telnet and mailx like so:
+
+sudo systemctl install -y mailx telnet postfix
+
+help
+Enable Email Forwarding on Server from Host Name/IP Address
+
+You will need to use the postconf utility to edit several variables in the /etc/postfix/main.cf configuration file, ther are:
+
+postconf -e "mydestination = 10.0.1.100, localhost.localdomain, localhost"
+postconf -e "mynetworks = 127.0.0.0/8, 10.0.1.0/24"
+postconf -e "inet_interfaces = all"
+
+
+ON CLIENT
+
+install mailx and postfix, enable and start both services
+
+
+TO EMAIL
+
+mail -s "This is a subject" <user_nam>e@[ip_addr] ----> must be in [] brackets
+
+to end the email press ctrl + d 
+
+View Logs on client
+tail /var/log/maillog
+
+
+Check mail on server
+
+$ mail or cat /var/spool/mail/<user_name_here>
