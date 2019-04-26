@@ -21,16 +21,22 @@ echo "Installing elasticsearch, enabling and starting"
 yum install elasticsearch -y
 
 sudo systemctl daemon-reload
+sleep 5
 sudo systemctl enable elasticsearch.service
 systemctl start elasticsearch
 
 echo "Testing elasticsearch on localhost port 9200...."
+echo
+echo
+
 echo "#####################Testing Elasticsearch######################
 #
 ######################################################################"
 curl localhost:9200
 echo
+echo
 echo " ######################End of Test###############################"
+echo
 
 yum install kibana -y
 
@@ -44,8 +50,3 @@ echo
 echo
 
 echo "###################################################################################################
-
-fill in the appropriate info and run this command ----> ssh <user_name>@<ip_addr> -L 5601:localhost:5601
-
-
-##########################################################################################################"
