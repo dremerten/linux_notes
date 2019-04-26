@@ -47,6 +47,6 @@ systemctl start kibana
 echo "Now exit your current ssh session and run the following to enable port forwarding on your local
 machine"
 echo
+echo "ssh cloud_user@<ip_addr> -L 5601:localhost:5601"
 echo
-
-echo "###################################################################################################
+echo "###################################################################################################"
