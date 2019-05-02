@@ -1,0 +1,98 @@
+Instructions
+
+Welcome to the second learning activity! In this learning activity, you will be using Watchtower to monitor containers for updates. In order to complete this learning activity, you will need a Docker Hub account.
+
+Log in to your live environment and sudo to root.
+Create the Dockerfile
+
+    The base image should be node.
+    Using the RUN instruction, make a directory called /var/node.
+    Use the ADD instruction to add the contents of the code directory into /var/node.
+    Make /var/node the working directory.
+    Execute an npm install.
+    Set ./bin/www as the command.
+    From the command line, log in to Docker Hub.
+    Build your image using <USERNAME>/express.
+    Push the image to Docker Hub.
+
+Create the demo app
+
+    Create a Docker container called demo-app.
+    The port mapping should be port 80 on the host, mapping to 3000 on the container.
+    The restart policy should be set to always.
+    Use the image that you created, <USERNAME>/express.
+
+Create the Watchtower container
+
+    Create a Docker container called watchtower.
+    The restart policy should be set to always.
+    Use the -v flag to set /var/run/docker.sock:/var/run/docker.sock.
+    Use the v2tec/watchtower followed by the -i flag to set the iteration to 30 seconds.
+
+Update the Docker image
+
+    Add an instruction to create /var/test. This should be done after creating /var/node.
+    Rebuild your image.
+    Push the image to Docker Hub.
+
+Watchtower will update demo-app
+
+    The Watchtower interval is set to 30 seconds.
+    After about 30 seconds, check to see if the container has been updated by executing docker ps.
+
+Objectives
+help
+Create the Dockerfile
+
+Create a Dockerfile:
+
+vi Dockerfile
+
+The Dockerfile should contain the following:
+
+FROM node
+
+RUN mkdir -p /var/node
+ADD content-express-demo-app/ /var/node/
+WORKDIR /var/node
+RUN npm install
+CMD ./bin/www
+
+help
+Build the Docker Image
+
+Build the Docker image:
+
+docker build -t USERNAME/express -f Dockerfile .
+
+help
+Push the Image to Docker Hub
+
+Login to Docker Hub:
+
+docker login
+
+Push the image to Docker Hub:
+
+docker push USERNAME/express
+
+help
+Create a Demo Container
+
+Create the container that Watchtower will monitor:
+
+ docker run -d --name demo-app -p 80:3000 --restart always USERNAME/express
+
+help
+Create the Watchtower Container
+
+Create the Watchtower container that will monitor the demo-app container:
+
+docker run -d --name watchtower --restart always -v /var/run/docker.sock:/var/run/docker.sock v2tec/watchtower -i 30
+
+help
+Update the Docker Image
+
+Update the Docker image:
+
+docker build -t USERNAME/express -f Dockerfile .

@@ -1,0 +1,82 @@
+Instructions
+
+Server1 (10.0.1.10) is running Apache.
+
+Server2 (10.0.1.11) must be able to view Server1's Apache content via http://ip-10.0.1.10.ec2.internal using elinks (not currently installed).
+Objectives
+help
+Verify Server1.
+
+Verify Server1 is running Apache:
+
+systemctl status httpd
+
+Verify Apache is listening on port 80:
+
+ss -lntp | grep 80
+
+# Verify the content can be accessed locally:
+
+curl localhost
+
+# Verify the firewall is permitting port 80 traffic:
+
+firewall-cmd --list-all
+
+# Permit inbound traffic to Apache:
+
+firewall-cmd --permanent --add-service=http
+
+# Reload the firewall to pickup the change:
+
+firewall-cmd --reload
+
+
+Verify Server2.
+
+On Server2 (10.0.1.11)
+
+# Attempt to pull the web content from Server1 via hostname:
+
+curl ip-10-0-1-10.ec2.internal
+
+# Attempt to pull the web content from Server1 via IP
+
+curl 10.0.1.10
+
+# Check to see what DNS hosts are being used:
+
+cat /etc/resolv.conf
+
+#Verify resolution via the specified host:
+# install bind utils
+
+dig @10.0.0.2 ip-10-0-1-10.ec2.internal
+
+#Verify /etc/nsswitch.conf:
+
+vim /etc/nsswitch.conf
+
+#Attempt to pull the web content from Server1 via hostname:
+
+curl ip-10-0-1-10.ec2.internal
+
+Ping ip-10-0-1-10.ec2.internal:
+
+ping ip-10-0-1-10.ec2.internal
+
+# Review /etc/hosts:
+
+vim /etc/hosts
+
+# Attempt to pull the web content from Server1 via hostname:
+
+curl ip-10-0-1-10.ec2.internal
+
+# Install elinks:
+
+yum install -y elinks
+
+# Use elinks to view the content:
+
+links -dump http://ip-10-0-1-10.ec2.internal

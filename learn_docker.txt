@@ -1,0 +1,132 @@
+Instructions
+SpaceBones 2 - The Quest for More Yummies
+
+Hello & welcome to your first challenge in The Quest for More Yummies. In this challenge, you are tasked with preparing your environment for maximum snack acquisition for the people of SpaceBones by installing docker, then acquiring the following images from DockerHub:
+
+    hello-world
+    06kellyjac/nyancat
+    jeremy646/doge
+
+Once the images have been downloaded, test your Docker installation by running the hello-world image. Don't forget to add correct permissions for the cloud_user user! cloud_user should be able to access Docker without using sudo. Good luck!
+Objectives
+help
+Install Docker from the Default CentOS 7 Repository
+
+After logging into the server, install the latest version of Docker using yum.
+
+$ sudo yum -y install docker
+
+
+# Enable & start Docker service
+
+Once installation completes, enable & start the service using systemd.
+
+User Permissions
+
+# Create a new group named docker, then add the cloud_user user to the group.
+$ groupadd docker
+$ usermod -aG docker cloud_user
+
+
+
+
+# After starting *& enabling Docker, run the hello-world container image to verify installation.
+
+$ systemctl enable --now docker
+
+# exit from root and log back in as normal user.
+
+
+# Pull Images, check the images and verify they are running.:w
+
+
+$ docker pull docker.io/hello-world
+$ docker images
+ 
+$ docker run hello-world
+$ docker ps -a
+
+After getting a valid return message from the hello-world image, pull the following images into your Docker repository to prepare for the next exercise.
+
+    06kellyjac/nyancat
+    jeremy646/doge
+
+CONTAINER LOGGING
+
+
+Instructions
+
+Log in to your live environment and sudo to root. Edit the syslog config file and uncomment the two lines under Provides UDP syslog reception. Then, start the syslog service.
+
+Configure Docker to use syslog as the default log driver and then start the Docker service.
+
+Create two new containers using the httpd image. The first one will be called syslog-logging and will use syslog for the log driver. The second will be called json-logging and will use the JSON file for the log driver.
+
+Verify that the syslog-logging container is sending its logs to syslog by running tail on the message log file. Then, verify that the json-logging container is sending its logs to the JSON file. Good luck!
+Objectives
+help
+Configure syslog.
+
+You will need to open rsyslog.conf and make a few changes:
+
+ vim /etc/rsyslog.conf
+
+Uncomment the two UDP syslog receptions:
+
+#$ModLoad imudp
+#$UDPServerRun 514
+
+to
+
+$ModLoad imudp
+$UDPServerRun 514
+
+help
+Configure Docker to use syslog.
+
+Create the daemon.json file.
+
+sudo mkdir /etc/docker
+vim /etc/docker/daemon.json
+
+Add the following content.
+
+{
+  "log-driver": "syslog",
+  "log-opts": {
+    "syslog-address": "udp://PRIVATE_IP:514"
+  }
+}
+
+help
+Create a container using syslog.
+
+Enable and start the Dockere service.
+
+ sudo systemctl enable docker
+ sudo systemctl start docker
+
+Create a container called syslog-logging using the httpd image.
+
+docker container run -d --name syslog-logging httpd
+
+help
+Create a container using a JSON file.
+
+Create a container that uses the JSON file for logging.
+
+docker container run -d --name json-logging --log-driver json-file httpd
+
+help
+Verify that the `syslog-logging` container is sending its logs to syslog.
+
+Make sure that the syslog-logging container is logging to syslog by checking the message log file:
+
+tail /var/log/message
+
+help
+Verify that the `json-logging` container is sending its logs to the JSON file.
+
+Execute docker logs for the json-logging container.
+
+ docker logs json-logging
