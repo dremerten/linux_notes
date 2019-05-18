@@ -1,0 +1,26 @@
+# navigate here 
+https://hub.docker.com/r/sciruby/iruby-notebook/
+
+# pull the image
+docker pull sciruby/iruby-notebook
+
+# How do I save my work done on Docker Jupyter?
+Data in containers is not persistent, so as soon as you quit running the container AND remove the container, the data goes with it.
+
+There are a few parts to your problem:
+
+    The "--rm" flag tells the container to remove itself if it an exit state. When you exit the jupyter container, it stops and automatically removes itself. Remove the "--rm" flag from the execution to stop this behavior. You'll still see the container using "docker ps -a", but it will be in an exited state instead of being removed.
+
+    To save data, you need to figure out where jupyter saves it's data and volume mount that location to your host system to preserve it locally. This requires use of the -v flag. For a database, like mariadb, you'd use something like this: docker run -d -p 3306:3306 -v /home/selfuser/data/:/var/lib/mysql --name database mariadb. The "-v" option mounts the /var/lib/mysql directory in the container (where the database is stored) to the host system under /home/selfuser/data/. You can then re-mount that location again and your data should stay preserved. There are other ways to preserve data, but this is usually the easiest method.
+
+    Finally, if you want to keep the container running, but not exit it, you can use a Ctrl+P, Ctrl+Q command sequence to detach from a running container.
+
+
+
+Docker containers are a good way to keep your dev environment clean. They are by definition stateless, if you want to save data then you have to mount a volume into it. Darcon's comment explains it well: create a folder on your host, let's say /home/YourUserName/jupyter and mount it into the container when you start it up:
+
+docker run -d -p 8888:8888 -v /home/<user_name>/jupyter:/tmp sciruby/iruby-notebook start-notebook.sh --NotebookApp.token=''
+
+
+This will make every file in your /home/YourUserName/jupyter folder accessible inside your container via /tmp and vice versa! So things you save in /tmp while working inside your container will then be available on your host in that previously declared folder. 
+
