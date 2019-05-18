@@ -1,0 +1,2 @@
+# This is the command to reconfigure keyboard in ubuntu /
+sudo dpkg-reconfigure keyboard-configuration 
